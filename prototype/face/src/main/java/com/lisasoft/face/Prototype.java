@@ -56,7 +56,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-public class App extends JFrame
+public class Prototype extends JFrame
 {
 	private StyleFactory sf = CommonFactoryFinder.getStyleFactory(null);
     private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
@@ -67,7 +67,7 @@ public class App extends JFrame
     private AbstractGridCoverage2DReader reader;
     
     public static void main(String[] args) throws Exception {
-    	JFrame frame = new App();
+    	JFrame frame = new Prototype();
     	frame.setSize(900, 900);
     	frame.setVisible(true);
     }
@@ -76,7 +76,7 @@ public class App extends JFrame
      * Prompts the user for a GeoTIFF file and a Shapefile and passes them to the displayLayers
      * method
      */
-    private App() throws Exception {
+    private Prototype() throws Exception {
 
         File imageFile = new File(new URI("file:/C:/Sandbox/gt-rnd/prototype/face/data/map/LT1092.tif"));
         File shapeFile = new File(new URI("file:/C:/Sandbox/gt-rnd/prototype/face/data/shapes/Gemeinden20110103.shp"));
