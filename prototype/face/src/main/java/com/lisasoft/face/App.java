@@ -1,15 +1,21 @@
 package com.lisasoft.face;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
+import java.awt.Dimension;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URI;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JToolBar;
 
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -18,11 +24,17 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
-import org.geotools.data.Parameter;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.FeatureCollections;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.map.MapContext;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.RasterSymbolizer;
@@ -31,48 +43,45 @@ import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.swing.JMapFrame;
-import org.geotools.swing.action.SafeAction;
-import org.geotools.swing.data.JParameterListWizard;
-import org.geotools.swing.wizard.JWizard;
-import org.geotools.util.KVP;
+import org.geotools.swing.JMapPane;
+import org.geotools.swing.action.ZoomInAction;
+import org.geotools.swing.action.ZoomOutAction;
+import org.geotools.swing.table.FeatureCollectionTableModel;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.style.ContrastMethod;
 
-public class App 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+
+public class App extends JFrame
 {
 	private StyleFactory sf = CommonFactoryFinder.getStyleFactory(null);
     private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
 
-    private JMapFrame frame;
+    private JMapFrame mapFrame;
+    private JTable table;
+    private JToolBar toolBar;
     private AbstractGridCoverage2DReader reader;
     
     public static void main(String[] args) throws Exception {
-    	App me = new App();
-        me.getLayersAndDisplay();
+    	JFrame frame = new App();
+    	frame.setSize(900, 900);
+    	frame.setVisible(true);
     }
     
     /**
      * Prompts the user for a GeoTIFF file and a Shapefile and passes them to the displayLayers
      * method
      */
-    private void getLayersAndDisplay() throws Exception {
-        List<Parameter<?>> list = new ArrayList<Parameter<?>>();
-        list.add(new Parameter<File>("image", File.class, "Image",
-                "GeoTiff or World+Image to display as basemap",
-                new KVP( Parameter.EXT, "tif", Parameter.EXT, "jpg")));
-        list.add(new Parameter<File>("shape", File.class, "Shapefile",
-                "Shapefile contents to display", new KVP(Parameter.EXT, "shp")));
+    private App() throws Exception {
 
-        JParameterListWizard wizard = new JParameterListWizard("Image Lab",
-                "Fill in the following layers", list);
-        int finish = wizard.showModalDialog();
-
-        if (finish != JWizard.FINISH) {
-            System.exit(0);
-        }
-        File imageFile = (File) wizard.getConnectionParameters().get("image");
-        File shapeFile = (File) wizard.getConnectionParameters().get("shape");
-        displayLayers(imageFile, shapeFile);
+        File imageFile = new File(new URI("file:/C:/Sandbox/gt-rnd/prototype/face/data/map/LT1092.tif"));
+        File shapeFile = new File(new URI("file:/C:/Sandbox/gt-rnd/prototype/face/data/shapes/Gemeinden20110103.shp"));
+        File csvFile = new File(new URI("file:/C:/Sandbox/gt-rnd/prototype/face/data/locations1.csv"));
+        displayLayers(imageFile, shapeFile, csvFile);
     }
     
     /**
@@ -83,7 +92,26 @@ public class App
      * @param shpFile
      *            the Shapefile
      */
-    private void displayLayers(File rasterFile, File shpFile) throws Exception {
+    private void displayLayers(File rasterFile, File shpFile, File csvFile) throws Exception {
+    	
+    	/*
+         * We create a FeatureCollection into which we will put each Feature created from a record
+         * in the input csv data file
+         */
+        SimpleFeatureCollection collection = getFeaturesFromFile(csvFile);
+        //scott this is the collection from csv, read this display table
+        FeatureCollectionTableModel model = new FeatureCollectionTableModel(collection);
+        table = new JTable();
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setPreferredScrollableViewportSize(new Dimension(800, 200));
+        table.setModel(model);
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new BorderLayout());
+        
+        JScrollPane scrollPane = new JScrollPane(table);
+        getContentPane().add(scrollPane, BorderLayout.NORTH);
+    	
         AbstractGridFormat format = GridFormatFinder.findFormat( rasterFile );        
         reader = format.getReader(rasterFile);
 
@@ -105,15 +133,17 @@ public class App
         map.addLayer(reader, rasterStyle);
         map.addLayer(shapefileSource, shpStyle);
 
+                
         // Create a JMapFrame with a menu to choose the display style for the
-        frame = new JMapFrame(map);
-        frame.setSize(800, 600);
-        frame.enableStatusBar(true);
+        mapFrame = new JMapFrame(map);
+        
+        /*mapFrame.setSize(800, 600);
+        mapFrame.enableStatusBar(true);
         //frame.enableTool(JMapFrame.Tool.ZOOM, JMapFrame.Tool.PAN, JMapFrame.Tool.RESET);
-        frame.enableToolBar(true);
+        mapFrame.enableToolBar(true);
 
         JMenuBar menuBar = new JMenuBar();
-        frame.setJMenuBar(menuBar);
+        mapFrame.setJMenuBar(menuBar);
         JMenu menu = new JMenu("Raster");
         menuBar.add(menu);
 
@@ -122,7 +152,7 @@ public class App
                 Style style = createGreyscaleStyle();
                 if (style != null) {
                     map.getLayer(0).setStyle(style);
-                    frame.repaint();
+                    mapFrame.repaint();
                 }
             }
         });
@@ -132,13 +162,39 @@ public class App
                 Style style = createRGBStyle();
                 if (style != null) {
                     map.getLayer(0).setStyle(style);
-                    frame.repaint();
+                    mapFrame.repaint();
                 }
            }
-        });
-        // Finally display the map frame.
-        // When it is closed the app will exit.
-        frame.setVisible(true);
+        });*/
+
+        JMapPane mapPane = new JMapPane();
+        
+        
+        // set a renderer to use with the map pane
+        mapPane.setRenderer(new StreamingRenderer());
+
+        // set the map context that contains the layers to be displayed        
+        mapPane.setMapContext(map);
+        mapPane.setSize(800, 500);
+        
+        toolBar = new JToolBar();
+        toolBar.setOrientation(JToolBar.HORIZONTAL);
+        toolBar.setFloatable(false);
+
+        ButtonGroup cursorToolGrp = new ButtonGroup();
+        
+        JButton zoomInBtn = new JButton(new ZoomInAction(mapPane));
+        toolBar.add(zoomInBtn);
+        //cursorToolGrp.add(zoomInBtn);
+
+        JButton zoomOutBtn = new JButton(new ZoomOutAction(mapPane));
+        toolBar.add(zoomOutBtn);
+        toolBar.setSize(800, 100);
+        //cursorToolGrp.add(zoomOutBtn);
+        
+        getContentPane().add(toolBar, BorderLayout.CENTER);
+        getContentPane().add(mapPane, BorderLayout.SOUTH);
+        //mapFrame.setVisible(true);
     }
     
     /**
@@ -158,7 +214,7 @@ public class App
         Integer[] bandNumbers = new Integer[numBands];
         for (int i = 0; i < numBands; i++) { bandNumbers[i] = i+1; }
         Object selection = JOptionPane.showInputDialog(
-                frame,
+        		mapFrame,
                 "Band to use for greyscale display",
                 "Select an image band",
                 JOptionPane.QUESTION_MESSAGE,
@@ -255,5 +311,87 @@ public class App
         sym.setChannelSelection(sel);
 
         return SLD.wrapSymbolizers(sym);
+    }
+    
+    /**
+     * Here is how you can use a SimpleFeatureType builder to create the schema for your shapefile
+     * dynamically.
+     * <p>
+     * This method is an improvement on the code used in the main method above (where we used
+     * DataUtilities.createFeatureType) because we can set a Coordinate Reference System for the
+     * FeatureType and a a maximum field length for the 'name' field dddd
+     */
+    private static SimpleFeatureType createFeatureType() {
+
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("Location");
+        builder.setCRS(DefaultGeographicCRS.WGS84); // <- Coordinate reference system
+
+        // add attributes in order
+        builder.add("Location", Point.class);
+        builder.length(15).add("Name", String.class); // <- 15 chars width for name field
+        builder.length(15).add("Number", Integer.class); // <- 15 chars width for name field
+
+        // build the type
+        final SimpleFeatureType LOCATION = builder.buildFeatureType();
+
+        return LOCATION;
+    }
+    
+    /**
+     * Here is how you can use a SimpleFeatureType builder to create the schema for your shapefile
+     * dynamically.
+     * <p>
+     * This method is an improvement on the code used in the main method above (where we used
+     * DataUtilities.createFeatureType) because we can set a Coordinate Reference System for the
+     * FeatureType and a a maximum field length for the 'name' field dddd
+     */
+    private SimpleFeatureCollection getFeaturesFromFile(File csvFile) throws Exception{
+    	
+    	final SimpleFeatureType TYPE = createFeatureType();
+
+        /*
+         * We create a FeatureCollection into which we will put each Feature created from a record
+         * in the input csv data file
+         */
+        SimpleFeatureCollection collection = FeatureCollections.newCollection();
+        /*
+         * GeometryFactory will be used to create the geometry attribute of each feature (a Point
+         * object for the location)
+         */
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
+
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
+        
+        BufferedReader csvReader = new BufferedReader(new FileReader(csvFile));
+        try {
+            /* First line of the data file is the header */
+            String line = csvReader.readLine();
+            System.out.println("Header: " + line);
+
+            for (line = csvReader.readLine(); line != null; line = csvReader.readLine()) {
+                if (line.trim().length() > 0) { // skip blank lines
+                    String tokens[] = line.split("\\,");
+
+                    double latitude = Double.parseDouble(tokens[0]);
+                    double longitude = Double.parseDouble(tokens[1]);
+                    String name = tokens[2].trim();
+                    int number = Integer.parseInt(tokens[3].trim());
+
+                    /* Longitude (= x coord) first ! */
+                    Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+
+                    featureBuilder.add(point);
+                    featureBuilder.add(name);
+                    featureBuilder.add(number);
+                    SimpleFeature feature = featureBuilder.buildFeature(null);
+                    collection.add(feature);
+                }
+            }
+        } finally {
+        	csvReader.close();
+        }
+        
+        return collection;
     }
 }
