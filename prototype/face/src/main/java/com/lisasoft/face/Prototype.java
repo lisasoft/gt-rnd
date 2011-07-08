@@ -78,9 +78,10 @@ public class Prototype extends JFrame
      */
     private Prototype() throws Exception {
 
-        File imageFile = new File(new URI("file:/C:/Sandbox/gt-rnd/prototype/face/data/map/LT1092.tif"));
-        File shapeFile = new File(new URI("file:/C:/Sandbox/gt-rnd/prototype/face/data/shapes/Gemeinden20110103.shp"));
-        File csvFile = new File(new URI("file:/C:/Sandbox/gt-rnd/prototype/face/data/locations1.csv"));
+        File imageFile = new File("LT1092.tif");
+        File shapeFile = new File("Gemeinden20110103.shp");
+        File csvFile = new File("data/locations.csv");
+        
         displayLayers(imageFile, shapeFile, csvFile);
     }
     
@@ -98,14 +99,15 @@ public class Prototype extends JFrame
          * We create a FeatureCollection into which we will put each Feature created from a record
          * in the input csv data file
          */
-        SimpleFeatureCollection collection = getFeaturesFromFile(csvFile);
-        //scott this is the collection from csv, read this display table
-        FeatureCollectionTableModel model = new FeatureCollectionTableModel(collection);
-        table = new JTable();
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.setPreferredScrollableViewportSize(new Dimension(800, 200));
-        table.setModel(model);
-        
+        if( csvFile.exists() ){
+            SimpleFeatureCollection collection = getFeaturesFromFile(csvFile);
+            //scott this is the collection from csv, read this display table
+            FeatureCollectionTableModel model = new FeatureCollectionTableModel(collection);
+            table = new JTable();
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            table.setPreferredScrollableViewportSize(new Dimension(800, 200));
+            table.setModel(model);
+        }
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout());
         
