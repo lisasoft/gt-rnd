@@ -1,0 +1,23 @@
+h1. Welcome to the LISAsoft RnD repository
+
+This repository is used for quick notes and scratch pad ideas; sometimes with
+customer collaboration.
+
+LISAsoft provides developer support for many open source applications; this
+repository is devoted to helping development teams integrate GeoTools
+with their own applications.
+
+Examples currently under construction:
+
+* 'ContentDataStore Tutorial':http://docs.geotools.org/latest/userguide/tutorial/advanced/contentdatastore.html
+* 'Face Prototype':https://github.com/lisasoft/gt-rnd/tree/master/prototype/face
+
+We do our best to contribute code examples back to the GeoTools documentation, and
+would like to thank our customers both for their business and for supporting
+open source development.
+
+.. note::
+   
+   Unless otherwise noted GeoTools documentation examples of this nature are provided
+   under an LGPL license to our customers. Placing code examples in this repository is
+   our method for ensuring we meet the requirements of source disclosure required by LGPL.
