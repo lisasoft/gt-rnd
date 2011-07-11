@@ -358,8 +358,8 @@ public class Prototype extends JFrame {
         toolBar.setSize(800, 100);
         // cursorToolGrp.add(zoomOutBtn);
 
-        getContentPane().add(toolBar, BorderLayout.CENTER);
-        getContentPane().add(mapPane, BorderLayout.SOUTH);
+        getContentPane().add(toolBar, BorderLayout.NORTH);
+        getContentPane().add(mapPane, BorderLayout.CENTER);
         // mapFrame.setVisible(true);
     }
 
