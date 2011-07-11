@@ -46,6 +46,12 @@ public interface Face {
     public void setSuedNordKoordinate(final java.math.BigDecimal suedNordKoordinate);
 
     /**
+     * This is the angle / bearing. 
+     * @return angle or bearing.
+     */
+    public String getAngle();
+    
+    /**
      * Registers a property change listener that is notified whenever a property of the face is
      * changed.
      * 

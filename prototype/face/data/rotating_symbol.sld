@@ -20,7 +20,7 @@
 	        <ExternalGraphic>
                   <OnlineResource
                     xlink:type="simple"
-                    xlink:href="http://localhost:81/geoserver/triangle.png" />
+                    xlink:href="file://triangle.png" />
                   <Format>image/png</Format>
                 </ExternalGraphic>
               <Rotation><ogc:PropertyName>Angle</ogc:PropertyName></Rotation>
