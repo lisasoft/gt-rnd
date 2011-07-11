@@ -51,6 +51,7 @@ import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.action.InfoAction;
 import org.geotools.swing.action.PanAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
@@ -405,6 +406,10 @@ public class Prototype extends JFrame {
         
         JButton panBtn = new JButton(new PanAction(mapPane));
         toolBar.add(panBtn);
+        
+        JButton infoBtn = new JButton(new InfoAction(mapPane));
+        toolBar.add(infoBtn);
+        
         toolBar.setSize(800, 100);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
