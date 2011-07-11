@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -153,7 +154,7 @@ public class Prototype extends JFrame {
         super("AGP Prototype");
         repo = new DefaultRepository();
 
-        // raster = HashMap<String, AbstractGridCoverage2DReader>();
+        raster = new LinkedHashMap<String, AbstractGridCoverage2DReader>();
     }
 
     /**
@@ -217,11 +218,8 @@ public class Prototype extends JFrame {
                         System.err.println("Unable to load " + tif);
                         continue;
                     }
-                    String name = reader.getCurrentSubname();
-                    if (name == null) {
-                        String fileName = tif.getName();
-                        name = fileName.substring(0, fileName.lastIndexOf(".") - 1);
-                    }
+                    String fileName = tif.getName();
+                    String name = fileName.substring(0, fileName.lastIndexOf(".") - 1);
                     raster.put(name, reader);
                 } catch (Throwable eek) {
                     System.err.println("Unable to load " + tif + ":" + eek);
