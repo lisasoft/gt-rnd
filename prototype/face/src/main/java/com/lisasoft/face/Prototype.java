@@ -161,7 +161,7 @@ public class Prototype extends JFrame {
 
     private SimpleFeatureCollection faces;
     
-    private static final String EPSG = "EPSG:4149";
+    private static final String FEAUTURE_EPSG = "EPSG:2056";
 
     /**
      * Create a Prototype Frame; please call init() to configure.
@@ -275,7 +275,7 @@ public class Prototype extends JFrame {
             // prj not provided going to assume EPSG:4326 and write one out
             try {
                 // true is ask for easting / northing order to match the data
-                CoordinateReferenceSystem crs = CRS.decode(EPSG,true);
+                CoordinateReferenceSystem crs = CRS.decode("EPSG:4326",true);
                 String wkt = crs.toWKT();
 
                 writer = new FileWriter(prj);
@@ -563,7 +563,7 @@ public class Prototype extends JFrame {
         // from email
         // Martin just got back to me and tells me that we have : ch1903
         // http://spatialreference.org/ref/?search=ch1903
-        builder.setSRS(EPSG); // from email 
+        builder.setSRS(FEAUTURE_EPSG); // from email 
         
         builder.add("Identifier", Integer.class);
         builder.add("Type", String.class);
