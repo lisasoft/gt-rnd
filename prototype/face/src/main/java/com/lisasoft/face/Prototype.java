@@ -367,8 +367,8 @@ public class Prototype extends JFrame {
         if (faces != null) {
             FeatureCollectionTableModel model = new FeatureCollectionTableModel(faces);
             table = new JTable();
-            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-            table.setPreferredScrollableViewportSize(new Dimension(800, 200));
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            table.setPreferredScrollableViewportSize(new Dimension(800, 100));
             table.setModel(model);
             scrollpane = new JScrollPane(table);
         }
