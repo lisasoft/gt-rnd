@@ -408,6 +408,9 @@ public class Prototype extends JFrame {
      */
     protected void loadSites() {
 
+    	/*
+    	 * First handle the actual renderable goodness.
+    	 */
         Style style;
         try {
         	FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
@@ -428,10 +431,19 @@ public class Prototype extends JFrame {
 
         //FeatureLayer layer = new FeatureLayer( faces, style );
         //map.addLayer( layer );
-         
-        faces = createSiteCollection();
+                faces = createSiteCollection();
         facesLayer = new FeatureLayer(faces, style);
         map.addLayer(facesLayer);
+        
+        /*
+         * Now let's worry about the selection layer.
+         */
+		SimpleFeatureCollection newCollection = createSiteCollection();
+		Style selectionStyle = createSelectedStyle(new HashSet<FeatureId>());
+		selectedFaceLayer = new FeatureLayer(newCollection, style);
+		map.layers().add(0, selectedFaceLayer);
+		
+		
     }
 
     @SuppressWarnings("deprecation")
@@ -553,29 +565,11 @@ public class Prototype extends JFrame {
     		} finally {
     			iter.close();
     		}
+    		
+    		System.out.println("Selected " + ids.size() + " features.");
 
-    		if(ids.isEmpty()) {
-    			System.out.println("Found no selections.  Removing selection layer.");
-    			map.removeLayer(selectedFaceLayer);
-    			selectedFaceLayer = null;
-    		} else {
-    			Style style = SLD.createPointStyle("triangle",Color.GREEN,Color.BLACK,1.0f,26);
-    			System.out.println("Selections found - " + ids.size());
-    			style = createSelectedStyle(ids);
-    			/*
-    			 * This is evil lazy selection layer creation.
-    			 */
-    			if(selectedFaceLayer == null) {
-    				System.out.println("  Creating selection layer.");
-    				SimpleFeatureCollection newCollection = createSiteCollection();
-    				selectedFaceLayer = new FeatureLayer(newCollection, style);
-    				int layerCount = map.getLayerCount();
-    				map.layers().add(0, selectedFaceLayer);
-    			} else {
-    				System.out.println("  Resetting layer style.");
-    				selectedFaceLayer.setStyle(style);
-    			}
-    		}
+    		Style style = createSelectedStyle(ids);
+    		selectedFaceLayer.setStyle(style);
    	        mapPane.repaint();
 
     	} catch(Exception ex) {
@@ -591,10 +585,13 @@ public class Prototype extends JFrame {
     private static double SELECTED_POINT_SIZE = 15.0;
     
     private Style createSelectedStyle(Set<FeatureId> ids) {
+    	/*
+    	 * First create the normal selection styler.
+    	 */
     	org.geotools.styling.Symbolizer symbolizer = null;
     	org.opengis.style.Fill fill = sf.createFill(ff.literal(SELECTED_FILL_COLOR), ff.literal(SELECTED_FILL_OPACITY));
     	Stroke stroke = sf.createStroke(ff.literal(SELECTED_STROKE_COLOR), ff.literal(SELECTED_STROKE_WIDTH));
-    	Mark mark = sf.getCircleMark();
+    	Mark mark = sf.getSquareMark();
     	mark.setFill(fill);
     	mark.setStroke(stroke);
     	
@@ -605,6 +602,24 @@ public class Prototype extends JFrame {
     	
     	symbolizer = sf.createPointSymbolizer(graphic, faces.getSchema().getGeometryDescriptor().getName().toString());
     	
+    	
+    	org.geotools.styling.Rule selectedRule = sf.createRule();
+    	selectedRule.symbolizers().add(symbolizer);
+    	if(ids == null || ids.isEmpty()) {
+    		System.out.println("Empty id set found.  Creating EXCLUDE filter.");
+    		selectedRule.setFilter(Filter.EXCLUDE);
+    	} else {
+    		System.out.println("" + ids.size() + " ids found.  Creating filter.");
+    		selectedRule.setFilter(ff.id(ids));
+    	}
+    	
+    	FeatureTypeStyle fts = sf.createFeatureTypeStyle();
+    	fts.rules().add(selectedRule);
+    	
+    	/*
+    	 * Next the other styler.
+    	 */
+    	/*
     	Mark otherMark = sf.getCircleMark();
     	org.opengis.style.Fill otherFill = sf.createFill(ff.literal(SELECTED_FILL_COLOR), ff.literal(0.0));
     	mark.setStroke(stroke);
@@ -617,18 +632,12 @@ public class Prototype extends JFrame {
     	
     	org.geotools.styling.Symbolizer otherSymbolizer = 
     		sf.createPointSymbolizer(graphic, faces.getSchema().getGeometryDescriptor().getName().toString());
-    	
-    	org.geotools.styling.Rule selectedRule = sf.createRule();
-    	selectedRule.symbolizers().add(symbolizer);
-    	selectedRule.setFilter(ff.id(ids));
-    	
     	org.geotools.styling.Rule otherRule = sf.createRule();
     	otherRule.setElseFilter(true);
     	otherRule.symbolizers().add(otherSymbolizer);
     	
-    	FeatureTypeStyle fts = sf.createFeatureTypeStyle();
-    	fts.rules().add(selectedRule);
     	fts.rules().add(otherRule);
+    	*/
     	
     	Style style = sf.createStyle();
     	style.featureTypeStyles().add(fts);
@@ -846,7 +855,8 @@ public class Prototype extends JFrame {
                     featureBuilder.add(angle);
                     featureBuilder.add(category);
                     
-                    SimpleFeature feature = featureBuilder.buildFeature(null);
+                    System.out.println("face." + identifier);
+                    SimpleFeature feature = featureBuilder.buildFeature("face." + identifier);
                     collection.add(feature);
                 }
             }
