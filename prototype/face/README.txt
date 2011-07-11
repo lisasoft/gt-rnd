@@ -32,3 +32,37 @@ HOW TO RUN ECLIPSE
 - Locate the root directory and import the project into your workspace
 
 4. Right click on "Prototype" and run as a Java application
+
+
+h2. Feedback on gt-swing
+
+The following issues were identified that made coding more verbose than needed:
+
+* MapMouseEvent ReferencedEnvelope based on number of pixels
+  
+  https://jira.codehaus.org/browse/GEOT-3715 
+
+* Relative paths for ExternalGraphics (ie Icon references) is not well supported
+  
+  Options (these are alternaitves):
+  
+  - Preprocess Style using a visior to rewrite relativ paths
+  - Update ImageGraphicFactory or SLDStyleFactory to handle relative file paths
+  - Use env vairable subst: so ${base}/face.png would refer to the SLD document base
+
+Required work:
+
+* MapContext is deprecated; the adption to use the MapContent is progressing as we speak on trunk.
+  
+* JMapPanel can use a tutoiral on how to embeded it into your own application. The JMapFrame
+  class is set up for tutorials; and does not serve as a good example itself (too many helper
+  methods that are "off topic").
+  
+* Test case coverage is low; may be able to make the argument that the coverage by the tutorial
+  code is more than sufficient to keep the API stable
+  
+* JMapPane handles a single background MapContent; it would be good to use a second BufferedImage
+  for draw quick feedback on (such as feedback from tools).
+  Motivation: This would prevent the entire map needing to redraw to show selection.
+ 
+* Ability to change the icons for the Actions would be nice; this is a low priority 

@@ -14,10 +14,14 @@
 package com.lisasoft.face.data;
 
 import java.beans.BeanInfo;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geotools.data.Query;
 import org.geotools.data.store.ContentDataStore;
@@ -25,14 +29,11 @@ import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.WeakValueHashMap;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * This is a really simple DataStore that is built around a List<Face>.
@@ -67,10 +68,50 @@ public class FaceDataStore extends ContentDataStore {
 
     public SimpleFeature toFeature(SimpleFeatureType schema, Face face) {
         BeanInfo info = getData().getBeanInfo();
-        
+
         SimpleFeatureBuilder build = new SimpleFeatureBuilder(schema);
+        Map<String, PropertyDescriptor> lookup = access(info, schema);
+        for( AttributeDescriptor attribute : schema.getAttributeDescriptors()){
+            String name = attribute.getLocalName();
+            PropertyDescriptor descriptor = lookup.get(name);
+            Method read = descriptor.getReadMethod();
+            Object value;
+            try {
+             // no argument getXXX() or isXXX()
+                value = read.invoke(face, null);
+            } catch (Exception e) {
+                value = null;
+            }
+            build.set(name,value);
+        }
+        // build using identifier for "FeatureID"
+        SimpleFeature feature = build.buildFeature("Face."+face.getNummer() );
+        return feature;
+    }
+
+    private static WeakValueHashMap< String, Map<String, PropertyDescriptor>> cache =
+            new WeakValueHashMap<String, Map<String, PropertyDescriptor>>();
+    /**
+     * List of property descriptors used to access a bean.
+     * 
+     * @param info
+     * @param schema
+     * @return
+     */
+    public static synchronized Map<String, PropertyDescriptor> access(BeanInfo info, SimpleFeatureType schema) {
+        Map<String, PropertyDescriptor> lookup;
         
-        return null;
+        lookup = cache.get(schema.getTypeName());
+        if( lookup == null ){
+            lookup = new HashMap<String, PropertyDescriptor>();
+            for( PropertyDescriptor property : info.getPropertyDescriptors() ){
+                String name = property.getName();
+                schema.getDescriptor(name);
+                lookup.put(name, property );
+            }
+            cache.put( schema.getTypeName(), lookup);
+        }        
+        return lookup;
     }
 
 }
