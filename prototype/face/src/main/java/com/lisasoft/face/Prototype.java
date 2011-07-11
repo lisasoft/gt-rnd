@@ -138,6 +138,12 @@ public class Prototype extends JFrame {
     private static final long serialVersionUID = -1415741029620524123L;
 
     /**
+     * Change this to match the EPSG code for your spatial reference system.
+     * 
+     * See: http://spatialreference.org/ref/?search=ch1903
+     */
+    public static String EPSG_CODE = "EPSG:2056";
+    /**
      * Used to create GeoTools styles; based on OGC Style Layer Descriptor specification.
      */
     private StyleFactory sf = CommonFactoryFinder.getStyleFactory(null);
