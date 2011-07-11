@@ -441,7 +441,8 @@ public class Prototype extends JFrame {
 		SimpleFeatureCollection newCollection = createSiteCollection();
 		Style selectionStyle = createSelectedStyle(new HashSet<FeatureId>());
 		selectedFaceLayer = new FeatureLayer(newCollection, style);
-		map.layers().add(0, selectedFaceLayer);
+		map.addLayer(selectedFaceLayer);
+//		map.layers().add(0, selectedFaceLayer);
 		
 		
     }
@@ -579,10 +580,10 @@ public class Prototype extends JFrame {
     }
     
     private static Color SELECTED_FILL_COLOR = Color.YELLOW;
-    private static double SELECTED_FILL_OPACITY = 0.3;
-    private static Color SELECTED_STROKE_COLOR = Color.RED;
-    private static double SELECTED_STROKE_WIDTH = 3;
-    private static double SELECTED_POINT_SIZE = 15.0;
+    private static double SELECTED_FILL_OPACITY = 0.0;
+    private static Color SELECTED_STROKE_COLOR = new Color(255, 0, 255);
+    private static double SELECTED_STROKE_WIDTH = 2.5;
+    private static double SELECTED_POINT_SIZE = 20.0;
     
     private Style createSelectedStyle(Set<FeatureId> ids) {
     	/*
