@@ -52,11 +52,16 @@ The following issues were identified that made coding more verbose than needed:
 
 Required work:
 
-* MapContext is deprecated; the adption to use the MapContent is progressing as we speak on trunk.
+* MapContext is deprecated; the adption to use the MapContent is progressing as we speak
+  on trunk showing active maintence of the library by the module maintainer.
   
 * JMapPanel can use a tutoiral on how to embeded it into your own application. The JMapFrame
   class is set up for tutorials; and does not serve as a good example itself (too many helper
   methods that are "off topic").
+  
+* The documentation is out of date:
+  
+  http://docs.geotools.org/latest/userguide/unsupported/swing/jmappane.html#
   
 * Test case coverage is low; may be able to make the argument that the coverage by the tutorial
   code is more than sufficient to keep the API stable
@@ -65,4 +70,4 @@ Required work:
   for draw quick feedback on (such as feedback from tools).
   Motivation: This would prevent the entire map needing to redraw to show selection.
  
-* Ability to change the icons for the Actions would be nice; this is a low priority 
+* Ability to change the icons for the Actions would be nice; this is a low priority
