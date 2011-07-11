@@ -553,6 +553,7 @@ public class Prototype extends JFrame {
         builder.add("West-East Coordinates", double.class);
         builder.add("South-North Coordinates", double.class);
         builder.add("Rotation Angle", String.class);
+        builder.add("Category", String.class);
 
         // build the type
         final SimpleFeatureType LOCATION = builder.buildFeatureType();
@@ -608,6 +609,7 @@ public class Prototype extends JFrame {
                     double latitude = Double.parseDouble(tokens[10]);
                     double longitude = Double.parseDouble(tokens[11]);
                     String angle = tokens[12].trim();
+                    String category = tokens[13].trim();
 
                     /* Longitude (= x coord) first ! */
                     //Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
@@ -625,6 +627,7 @@ public class Prototype extends JFrame {
                     featureBuilder.add(latitude);
                     featureBuilder.add(longitude);
                     featureBuilder.add(angle);
+                    featureBuilder.add(category);
                     
                     SimpleFeature feature = featureBuilder.buildFeature(null);
                     collection.add(feature);
