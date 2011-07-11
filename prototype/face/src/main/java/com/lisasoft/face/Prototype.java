@@ -239,8 +239,8 @@ public class Prototype extends JFrame {
      * be cleaned up).
      */
     private void loadData() {
-        //File directory = new File(".");
-        File directory = new File("./data");
+        File directory = new File(".");
+//        File directory = new File("./data");
         if (directory.exists() && directory.isDirectory()) {
             // check for shapefiles
             //
