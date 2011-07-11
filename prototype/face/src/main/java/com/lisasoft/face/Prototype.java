@@ -258,7 +258,8 @@ public class Prototype extends JFrame {
 
             // prj not provided going to assume EPSG:4326 and write one out
             try {
-                CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+                // true is ask for easting / northing order to match the data
+                CoordinateReferenceSystem crs = CRS.decode("EPSG:4326",true);
                 String wkt = crs.toWKT();
 
                 writer = new FileWriter(prj);
@@ -353,10 +354,10 @@ public class Prototype extends JFrame {
                 System.out.println("Could not load faces:" + eek);
             }
         }
-        Style style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
-        
-        FeatureLayer layer = new FeatureLayer( faces, style );
-        map.addLayer( layer );
+//        Style style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
+//        
+//        FeatureLayer layer = new FeatureLayer( faces, style );
+//        map.addLayer( layer );
     }
 
     @SuppressWarnings("deprecation")
