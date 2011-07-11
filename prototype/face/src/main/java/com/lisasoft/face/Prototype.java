@@ -188,6 +188,7 @@ public class Prototype extends JFrame {
     private MapContext map;
 
     private SimpleFeatureCollection faces;
+    private FeatureLayer facesLayer;
     private FeatureLayer selectedFaceLayer;
     
     private static final String FEAUTURE_EPSG = "EPSG:2056";
@@ -383,30 +384,39 @@ public class Prototype extends JFrame {
         return map;
 
     }
+    
+    protected SimpleFeatureCollection createSiteCollection() {
+        File csvFile = new File("data/senario.csv");
+        SimpleFeatureCollection collection;
+
+        if (csvFile.exists()) {
+        	try {
+        		return getFeaturesFromFile(csvFile);
+        	} catch (Throwable eek) {
+        		System.out.println("Could not load faces:" + eek);
+        	}
+        }
+        /*
+         * eww
+         */
+        return null;
+    }
 
     /*
      * We create a FeatureCollection into which we will put each Feature created from a record in
      * the input csv data file
      */
     protected void loadSites() {
-        File csvFile = new File("data/senario.csv");
-
-        if (csvFile.exists()) {
-        	try {
-        		faces = getFeaturesFromFile(csvFile);
-        	} catch (Throwable eek) {
-        		System.out.println("Could not load faces:" + eek);
-        	}
-        }
 
         Style style;
         try {
         	FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
         	SLDParser stylereader = new SLDParser(sf, inputStream);
+        	
         	Style styles[] = stylereader.readXML();
 
         	if(styles.length > 0) {
-        		//style = styles[0];
+//        		style = styles[0];
         		style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
         	} else {
         		// Create a basic style with yellow lines and no fill
@@ -418,9 +428,10 @@ public class Prototype extends JFrame {
 
         //FeatureLayer layer = new FeatureLayer( faces, style );
         //map.addLayer( layer );
-        
-        FeatureLayer layer = new FeatureLayer( faces, style );
-        map.addLayer( layer );
+         
+        faces = createSiteCollection();
+        facesLayer = new FeatureLayer(faces, style);
+        map.addLayer(facesLayer);
     }
 
     @SuppressWarnings("deprecation")
@@ -533,7 +544,6 @@ public class Prototype extends JFrame {
     		SimpleFeatureCollection selectedFeatures = faces.subCollection(filter);
     		SimpleFeatureIterator iter = selectedFeatures.features();
     		Set<FeatureId> ids = new HashSet<FeatureId>();
-    		Style style;
     		try {
     			while(iter.hasNext()) {
     				SimpleFeature feature = iter.next();
@@ -549,6 +559,7 @@ public class Prototype extends JFrame {
     			map.removeLayer(selectedFaceLayer);
     			selectedFaceLayer = null;
     		} else {
+    			Style style = SLD.createPointStyle("triangle",Color.GREEN,Color.BLACK,1.0f,26);
     			System.out.println("Selections found - " + ids.size());
     			style = createSelectedStyle(ids);
     			/*
@@ -556,8 +567,10 @@ public class Prototype extends JFrame {
     			 */
     			if(selectedFaceLayer == null) {
     				System.out.println("  Creating selection layer.");
-    				selectedFaceLayer = new FeatureLayer( faces, style );
-    				map.addLayer(selectedFaceLayer);
+    				SimpleFeatureCollection newCollection = createSiteCollection();
+    				selectedFaceLayer = new FeatureLayer(newCollection, style);
+    				int layerCount = map.getLayerCount();
+    				map.layers().add(0, selectedFaceLayer);
     			} else {
     				System.out.println("  Resetting layer style.");
     				selectedFaceLayer.setStyle(style);
@@ -612,10 +625,10 @@ public class Prototype extends JFrame {
     	org.geotools.styling.Rule otherRule = sf.createRule();
     	otherRule.setElseFilter(true);
     	otherRule.symbolizers().add(otherSymbolizer);
-    		
     	
     	FeatureTypeStyle fts = sf.createFeatureTypeStyle();
     	fts.rules().add(selectedRule);
+    	fts.rules().add(otherRule);
     	
     	Style style = sf.createStyle();
     	style.featureTypeStyles().add(fts);
