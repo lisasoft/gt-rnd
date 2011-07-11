@@ -498,12 +498,16 @@ public class Prototype extends JFrame {
         // mapFrame.setVisible(true);
     }
     
+    private static int SELECTION_BUFFER_WIDTH = 10;
     void selectFeatures(MapMouseEvent ev) {
     	/*
     	 * Create a small selection region.
     	 */
     	java.awt.Point screenPos = ev.getPoint();
-    	Rectangle screenRect = new Rectangle(screenPos.x-2, screenPos.y-2, 5, 5);
+    	Rectangle screenRect = new Rectangle(
+    			screenPos.x-(SELECTION_BUFFER_WIDTH/2), 
+    			screenPos.y-(SELECTION_BUFFER_WIDTH/2), 
+    			SELECTION_BUFFER_WIDTH, SELECTION_BUFFER_WIDTH);
     	
     	/*
     	 * Transform the screen rectangle to map coordinates.
@@ -528,6 +532,7 @@ public class Prototype extends JFrame {
     			while(iter.hasNext()) {
     				SimpleFeature feature = iter.next();
     				ids.add(feature.getIdentifier());
+//    				System.out.println("ID - " + feature.getIdentifier());
     			}
     		} finally {
     			iter.close();
@@ -538,7 +543,7 @@ public class Prototype extends JFrame {
     			map.removeLayer(selectedFaceLayer);
     			selectedFaceLayer = null;
     		} else {
-    			System.out.println("Selections found.");
+    			System.out.println("Selections found - " + ids.size());
     			style = createSelectedStyle(ids);
     			/*
     			 * This is evil lazy selection layer creation.
@@ -552,6 +557,7 @@ public class Prototype extends JFrame {
     				selectedFaceLayer.setStyle(style);
     			}
     		}
+   	        mapPane.repaint();
 
     	} catch(Exception ex) {
     		ex.printStackTrace();
@@ -559,11 +565,11 @@ public class Prototype extends JFrame {
     	}
     }
     
-    private static Color SELECTED_FILL_COLOR = Color.YELLOW;
+    private static Color SELECTED_FILL_COLOR = Color.RED;
     private static double SELECTED_FILL_OPACITY = 0.5;
-    private static Color SELECTED_STROKE_COLOR = Color.YELLOW;
-    private static double SELECTED_STROKE_WIDTH = 1;
-    private static double SELECTED_POINT_SIZE = 5.0;
+    private static Color SELECTED_STROKE_COLOR = Color.BLACK;
+    private static double SELECTED_STROKE_WIDTH = 3;
+    private static double SELECTED_POINT_SIZE = 15.0;
     
     private Style createSelectedStyle(Set<FeatureId> ids) {
     	org.geotools.styling.Symbolizer symbolizer = null;
@@ -580,9 +586,27 @@ public class Prototype extends JFrame {
     	
     	symbolizer = sf.createPointSymbolizer(graphic, faces.getSchema().getGeometryDescriptor().getName().toString());
     	
+    	Mark otherMark = sf.getCircleMark();
+    	org.opengis.style.Fill otherFill = sf.createFill(ff.literal(SELECTED_FILL_COLOR), ff.literal(0.0));
+    	mark.setStroke(stroke);
+    	mark.setFill(otherFill);
+    	
+    	org.geotools.styling.Graphic otherGraphic = sf.createDefaultGraphic();
+    	otherGraphic.graphicalSymbols().clear();
+    	otherGraphic.graphicalSymbols().add(otherMark);
+    	otherGraphic.setSize(ff.literal(SELECTED_POINT_SIZE));
+    	
+    	org.geotools.styling.Symbolizer otherSymbolizer = 
+    		sf.createPointSymbolizer(graphic, faces.getSchema().getGeometryDescriptor().getName().toString());
+    	
     	org.geotools.styling.Rule selectedRule = sf.createRule();
     	selectedRule.symbolizers().add(symbolizer);
     	selectedRule.setFilter(ff.id(ids));
+    	
+    	org.geotools.styling.Rule otherRule = sf.createRule();
+    	otherRule.setElseFilter(true);
+    	otherRule.symbolizers().add(otherSymbolizer);
+    		
     	
     	FeatureTypeStyle fts = sf.createFeatureTypeStyle();
     	fts.rules().add(selectedRule);
