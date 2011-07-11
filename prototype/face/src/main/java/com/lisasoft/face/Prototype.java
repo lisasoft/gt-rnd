@@ -161,7 +161,7 @@ public class Prototype extends JFrame {
 
     private SimpleFeatureCollection faces;
     
-    private static final String FEAUTURE_EPSG = "EPSG:2056";
+    private static final String FEAUTURE_EPSG = "EPSG:4326";
 
     /**
      * Create a Prototype Frame; please call init() to configure.
@@ -637,6 +637,7 @@ public class Prototype extends JFrame {
 
                     /* Longitude (= x coord) first ! */
                     Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+                    //Point point = geometryFactory.createPoint(new Coordinate(latitude,longitude));
                     
                     featureBuilder.add(identifier);
                     featureBuilder.add(type);
