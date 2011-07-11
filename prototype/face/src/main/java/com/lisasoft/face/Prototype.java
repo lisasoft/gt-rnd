@@ -183,8 +183,8 @@ public class Prototype extends JFrame {
      */
     protected void init() throws Exception {
         loadData();
-        loadSites();
         map = createMap(repo, raster);
+        loadSites();
         initUserInterface();
     }
 
@@ -353,6 +353,10 @@ public class Prototype extends JFrame {
                 System.out.println("Could not load faces:" + eek);
             }
         }
+        Style style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
+        
+        FeatureLayer layer = new FeatureLayer( faces, style );
+        map.addLayer( layer );
     }
 
     @SuppressWarnings("deprecation")

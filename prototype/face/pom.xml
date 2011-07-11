@@ -52,6 +52,11 @@
       <artifactId>gt-wms</artifactId>
       <version>${geotools.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-csv</artifactId>
+      <version>${geotools.version}</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
