@@ -20,6 +20,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -60,9 +61,11 @@ import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.SLD;
+import org.geotools.styling.SLDParser;
 import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
+import org.geotools.styling.StyleFactoryImpl;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.InfoAction;
 import org.geotools.swing.action.PanAction;
@@ -119,6 +122,12 @@ public class Prototype extends JFrame {
     /** serialVersionUID */
     private static final long serialVersionUID = -1415741029620524123L;
 
+    /**
+     * Change this to match the EPSG code for your spatial reference system.
+     * 
+     * See: http://spatialreference.org/ref/?search=ch1903
+     */
+    public static String EPSG_CODE = "EPSG:2056";
     /**
      * Used to create GeoTools styles; based on OGC Style Layer Descriptor specification.
      */
@@ -209,7 +218,8 @@ public class Prototype extends JFrame {
      * be cleaned up).
      */
     private void loadData() {
-        File directory = new File(".");
+        //File directory = new File(".");
+        File directory = new File("./data");
         if (directory.exists() && directory.isDirectory()) {
             // check for shapefiles
             //
@@ -331,10 +341,23 @@ public class Prototype extends JFrame {
             try {
                 for (String typeName : dataStore.getTypeNames()) {
                     SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
+                    
+                    /*
+                    StyleFactory styleFactory = new StyleFactoryImpl();
+                    FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
+                    SLDParser stylereader = new SLDParser(styleFactory, inputStream);
+                    Style styles[] = stylereader.readXML();
+                    Style style;
+                    
+                    if(styles.length > 0) {
+                    	style = styles[0];
+                    } else {
+                    	// Create a basic style with yellow lines and no fill
+                    	style = SLD.createPolygonStyle(Color.RED, null, 0.0f);
+                    }
+                    */
 
-                    // Create a basic style with yellow lines and no fill
                     Style style = SLD.createPolygonStyle(Color.RED, null, 0.0f);
-
                     FeatureLayer layer = new FeatureLayer(featureSource, style);
 
                     if (featureSource.getInfo() != null
@@ -364,13 +387,32 @@ public class Prototype extends JFrame {
         File csvFile = new File("data/senario.csv");
 
         if (csvFile.exists()) {
-            try {
-                faces = getFeaturesFromFile(csvFile);
-            } catch (Throwable eek) {
-                System.out.println("Could not load faces:" + eek);
-            }
+        	try {
+        		faces = getFeaturesFromFile(csvFile);
+        	} catch (Throwable eek) {
+        		System.out.println("Could not load faces:" + eek);
+        	}
         }
-        Style style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
+
+        Style style;
+        try {
+        	StyleFactory styleFactory = new StyleFactoryImpl();
+        	FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
+        	SLDParser stylereader = new SLDParser(styleFactory, inputStream);
+        	Style styles[] = stylereader.readXML();
+
+        	if(styles.length > 0) {
+        		style = styles[0];
+        	} else {
+        		// Create a basic style with yellow lines and no fill
+        		style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
+        	}
+        } catch(IOException ex) {
+        	style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
+        }
+
+        //FeatureLayer layer = new FeatureLayer( faces, style );
+        //map.addLayer( layer );
         
         FeatureLayer layer = new FeatureLayer( faces, style );
         map.addLayer( layer );
@@ -576,7 +618,7 @@ public class Prototype extends JFrame {
         builder.add("Street", String.class);
         builder.add("House Number", String.class);
         builder.add("Point", Point.class);
-        builder.add("Rotation Angle", String.class);
+        builder.add("Angle", String.class);
         builder.add("Category", String.class);
 
         // build the type

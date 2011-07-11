@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,54 +84,44 @@ public class FaceDAO {
             face.setType( reader.get("Typ"));
             
             // String faceFormat = tokens[2].trim();
-            face.setFaceFormat( reader.get(2));
+            face.setFaceFormat( reader.get(3));
             
             // String productFormat = tokens[3].trim();
-            face.setProductFormat( reader.get(3));
+            face.setProductFormat(reader.get(4));
             
             // String status = tokens[4].trim();
-            face.setType( reader.get(4));
+            face.setStatus( reader.get(5));
             
             // String installed = tokens[5].trim();
-            face.setType( reader.get("Typ"));
+            face.setInstalled( reader.get(6));
             
             // String posting = tokens[6].trim();
-            face.setType( reader.get("Typ"));
+            face.setPosting( reader.get(7));
             
             // String area = tokens[7].trim();
-            face.setType( reader.get("Typ"));
-            // String street = tokens[8].trim();
-            face.setType( reader.get("Typ"));
-            // String number = tokens[9].trim();
-            face.setType( reader.get("Typ"));
-            // double latitude = Double.parseDouble(tokens[10]);
-            face.setType( reader.get("Typ"));
-            // double longitude = Double.parseDouble(tokens[11]);
-            face.setType( reader.get("Typ"));
-            // String angle = tokens[12].trim();
-            face.setType( reader.get("Typ"));
-            // String category = tokens[13].trim();
-            face.setType( reader.get("Typ"));
+            face.setArea( reader.get(8));
             
-            //
-            // /* Longitude (= x coord) first ! */
-            // //Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-            //
-            // featureBuilder.add(identifier);
-            // featureBuilder.add(type);
-            // featureBuilder.add(faceFormat);
-            // featureBuilder.add(productFormat);
-            // featureBuilder.add(status);
-            // featureBuilder.add(installed);
-            // featureBuilder.add(posting);
-            // featureBuilder.add(area);
-            // featureBuilder.add(street);
-            // featureBuilder.add(number);
-            // featureBuilder.add(latitude);
-            // featureBuilder.add(longitude);
-            // featureBuilder.add(angle);
-            // featureBuilder.add(category);
+            // String street = tokens[8].trim();            
+            face.setStreet( reader.get(9));
+            
+            // String number = tokens[9].trim();
+            face.setNumber( reader.get(10) );
+            
+            double x = Double.parseDouble( reader.get(11));
+            face.setWestOstKoordinate( new BigDecimal(x));
+            
+            // double longitude = Double.parseDouble(tokens[11]);
+            double y = Double.parseDouble( reader.get(12));
+            face.setSuedNordKoordinate( new BigDecimal(y));
+            
+            // String angle = tokens[12].trim();
+            face.setAngle( reader.get(13));
+            
+            // String category = tokens[13].trim();
+            face.setCategory( reader.get(14));
+            
+            faceList.add( face );
         }
-        return null;
+        return faceList;
     }
 }

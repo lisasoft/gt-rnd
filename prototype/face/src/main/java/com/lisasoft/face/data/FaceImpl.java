@@ -139,7 +139,7 @@ public class FaceImpl implements Face {
         return number;
     }
 
-    public void setNummer(String number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
