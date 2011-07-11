@@ -381,30 +381,30 @@ public class Prototype extends JFrame {
         File csvFile = new File("data/senario.csv");
 
         if (csvFile.exists()) {
-            try {
-                faces = getFeaturesFromFile(csvFile);
-            } catch (Throwable eek) {
-                System.out.println("Could not load faces:" + eek);
-            }
+        	try {
+        		faces = getFeaturesFromFile(csvFile);
+        	} catch (Throwable eek) {
+        		System.out.println("Could not load faces:" + eek);
+        	}
         }
-        
+
         Style style;
         try {
-        StyleFactory styleFactory = new StyleFactoryImpl();
-        FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
-        SLDParser stylereader = new SLDParser(styleFactory, inputStream);
-        Style styles[] = stylereader.readXML();
-        
-        if(styles.length > 0) {
-        	style = styles[0];
-        } else {
-        	// Create a basic style with yellow lines and no fill
-        	style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
-        }
+        	StyleFactory styleFactory = new StyleFactoryImpl();
+        	FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
+        	SLDParser stylereader = new SLDParser(styleFactory, inputStream);
+        	Style styles[] = stylereader.readXML();
+
+        	if(styles.length > 0) {
+        		style = styles[0];
+        	} else {
+        		// Create a basic style with yellow lines and no fill
+        		style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
+        	}
         } catch(IOException ex) {
         	style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
         }
-        
+
         //FeatureLayer layer = new FeatureLayer( faces, style );
         //map.addLayer( layer );
         
@@ -612,7 +612,7 @@ public class Prototype extends JFrame {
         builder.add("Street", String.class);
         builder.add("House Number", String.class);
         builder.add("Point", Point.class);
-        builder.add("Rotation Angle", String.class);
+        builder.add("Angle", String.class);
         builder.add("Category", String.class);
 
         // build the type
