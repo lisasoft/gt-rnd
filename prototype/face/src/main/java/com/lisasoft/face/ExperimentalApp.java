@@ -115,7 +115,7 @@ public class ExperimentalApp extends JFrame
         getContentPane().setLayout(new BorderLayout());
         
         JScrollPane scrollPane = new JScrollPane(table);
-        getContentPane().add(scrollPane, BorderLayout.NORTH);
+        getContentPane().add(scrollPane, BorderLayout.SOUTH);
         
         AbstractGridFormat format = GridFormatFinder.findFormat( rasterFile );        
         reader = format.getReader(rasterFile);
@@ -197,8 +197,8 @@ public class ExperimentalApp extends JFrame
         toolBar.setSize(800, 100);
         //cursorToolGrp.add(zoomOutBtn);
         
-        getContentPane().add(toolBar, BorderLayout.CENTER);
-        getContentPane().add(mapPane, BorderLayout.SOUTH);
+        getContentPane().add(toolBar, BorderLayout.NORTH);
+        getContentPane().add(mapPane, BorderLayout.CENTER);
         //mapFrame.setVisible(true);
     }
     
