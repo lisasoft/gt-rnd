@@ -3,9 +3,15 @@ package com.lisasoft.face;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -39,6 +45,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapContext;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.ChannelSelection;
@@ -55,6 +62,9 @@ import org.geotools.swing.table.FeatureCollectionTableModel;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -165,8 +175,8 @@ public class Prototype extends JFrame {
      * <li>loadData() - load data into a repository
      * <li>createMap() - create a MapContent
      * <li>loadSites() - load site information
-     * <li>initUserInterface() - layout user interface components; this will create the MapComponent and
-     * connect it to the required data model etc...
+     * <li>initUserInterface() - layout user interface components; this will create the MapComponent
+     * and connect it to the required data model etc...
      * </ul>
      */
     protected void init() throws Exception {
@@ -192,6 +202,8 @@ public class Prototype extends JFrame {
             });
             for (File shp : shapefiles) {
                 try {
+                    File prj = checkPRJ(shp);
+
                     FileDataStore dataStore = FileDataStoreFinder.getDataStore(shp);
                     if (dataStore != null) {
                         for (String typeName : dataStore.getTypeNames()) {
@@ -212,6 +224,9 @@ public class Prototype extends JFrame {
             });
             for (File tif : tiffFiles) {
                 try {
+                    // create PRJ files for .TIF images that do not have one
+                    File prj = checkPRJ(tif);
+                    
                     AbstractGridFormat format = GridFormatFinder.findFormat(tif);
                     AbstractGridCoverage2DReader reader = format.getReader(tif);
                     if (reader == null) {
@@ -228,6 +243,41 @@ public class Prototype extends JFrame {
 
             }
         }
+    }
+
+    private File checkPRJ(File targetFile) {
+        // why does Java not have a method to make this easy ...
+        String base = targetFile.getName().substring(0, targetFile.getName().lastIndexOf("."));
+
+        // this is a world plus image file
+        File prj = new File(targetFile.getParentFile(), base + ".prj");
+        if (!prj.exists()) {
+            FileWriter writer = null;
+
+            // prj not provided going to assume EPSG:4326 and write one out
+            try {
+                CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+                String wkt = crs.toWKT();
+
+                writer = new FileWriter(prj);
+                writer.append(wkt);
+            } catch (NoSuchAuthorityCodeException e) {
+                System.out.println("Did you an include an EPSG jar on the CLASSPATH?");
+            } catch (FactoryException e) {
+                System.out.println("Did you an include an EPSG jar on the CLASSPATH?");
+            } catch (IOException e) {
+                System.out.println("Unable to generate " + prj);
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (IOException e) {
+                        System.out.println("Trouble closing " + prj);
+                    }
+                }
+            }
+        }
+        return prj;
     }
 
     /**
@@ -258,30 +308,31 @@ public class Prototype extends JFrame {
         }
         // add shapefiles on top
         for (DataStore dataStore : repo.getDataStores()) {
-            
+
             try {
-                for( String typeName : dataStore.getTypeNames() ){
-                    SimpleFeatureSource featureSource = dataStore.getFeatureSource( typeName );
+                for (String typeName : dataStore.getTypeNames()) {
+                    SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
 
                     // Create a basic style with yellow lines and no fill
                     Style style = SLD.createPolygonStyle(Color.RED, null, 0.0f);
 
-                    FeatureLayer layer = new FeatureLayer( featureSource, style );
-                    
-                    if (featureSource.getInfo() != null && featureSource.getInfo().getTitle() != null) {
+                    FeatureLayer layer = new FeatureLayer(featureSource, style);
+
+                    if (featureSource.getInfo() != null
+                            && featureSource.getInfo().getTitle() != null) {
                         layer.setTitle(featureSource.getInfo().getTitle());
                     }
 
-                    map.addLayer( layer );
+                    map.addLayer(layer);
                 }
             } catch (IOException e) {
-                System.err.print("Could not load "+dataStore );
+                System.err.print("Could not load " + dataStore);
             }
         }
 
         // configure map
         map.setTitle("Prototype");
-        
+
         return map;
 
     }
@@ -340,7 +391,7 @@ public class Prototype extends JFrame {
         mapPane.setRenderer(new StreamingRenderer());
 
         // set the map context that contains the layers to be displayed
-        mapPane.setMapContext( new MapContext( map ));
+        mapPane.setMapContext(new MapContext(map));
         mapPane.setSize(800, 500);
 
         toolBar = new JToolBar();
@@ -363,6 +414,26 @@ public class Prototype extends JFrame {
         // mapFrame.setVisible(true);
     }
 
+    /**
+     * This is the opposite of init(); in this case we use it to dispose of all the DataStore we are
+     * using. While this is not very exciting for Shapefile; it is important when working with JDBC
+     * DataStores that have a real connection.
+     */
+    public void cleanup() {
+        for (DataStore dataStore : repo.getDataStores()) {
+            try {
+                dataStore.dispose();
+            } catch (Throwable eek) {
+                System.err.print("Error cleaning up " + dataStore + ":" + eek);
+            }
+        }
+    }
+
+    // INTERNAL
+    //
+    // The following private methods are mostly used to set the stage; make them protected
+    // if you wish to call them from a subclass
+    //
     /**
      * Create a Style to display the specified band of the GeoTIFF image as a greyscale layer.
      * <p>
@@ -541,14 +612,43 @@ public class Prototype extends JFrame {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Prototype app = new Prototype();
+        // marked final so we can refer to it from a window listener
+
+        final Prototype app = new Prototype();
 
         // configuration
         app.init();
 
         // display
-        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // app.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+        // use anonymous WindowListener to clean up ..
+        app.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                // This is where you prompt to save; commit transactions or rollback as needed
+                System.out.println("Goodbye");
+
+                // window is about to close; we could save out any state here
+                // so the user does not lose their work
+
+                // this is the same as HIDE_ON_CLOSE
+                app.setVisible(false);
+                // (you could leave it open to show a progress bar)
+
+                // this is the same as dispose on close; calls windowClosed()
+                app.dispose();
+            }
+
+            public void windowClosed(WindowEvent e) {
+                System.out.println("Finished");
+                app.cleanup();
+                System.exit(0);
+            }
+        });
         app.setSize(900, 900);
         app.setVisible(true);
+
+        // even though this is the "end" of the main method the Swing thread was created
+        // by setVisible above and will hold the application open (strange design really)
     }
 }
