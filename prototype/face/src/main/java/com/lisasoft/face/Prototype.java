@@ -116,6 +116,11 @@ public class Prototype extends JFrame {
      * Table used to list Face content.
      */
     private JTable table;
+    
+    /**
+     * Scroll pane used by table.
+     */
+    private JScrollPane scrollpane;
 
     /**
      * Small toolbar configured with both JMapPane tools (for panning and zooming) and custom tools
@@ -365,6 +370,7 @@ public class Prototype extends JFrame {
             table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             table.setPreferredScrollableViewportSize(new Dimension(800, 200));
             table.setModel(model);
+            scrollpane = new JScrollPane(table);
         }
         /*
          * mapFrame.setSize(800, 600); mapFrame.enableStatusBar(true);
@@ -396,8 +402,6 @@ public class Prototype extends JFrame {
         toolBar.setOrientation(JToolBar.HORIZONTAL);
         toolBar.setFloatable(false);
 
-        //ButtonGroup cursorToolGrp = new ButtonGroup();
-
         JButton zoomInBtn = new JButton(new ZoomInAction(mapPane));
         toolBar.add(zoomInBtn);
 
@@ -414,7 +418,7 @@ public class Prototype extends JFrame {
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
         getContentPane().add(mapPane, BorderLayout.CENTER);
-        getContentPane().add(table, BorderLayout.SOUTH);
+        getContentPane().add(scrollpane, BorderLayout.SOUTH);
         // mapFrame.setVisible(true);
     }
 
