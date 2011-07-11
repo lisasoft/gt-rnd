@@ -41,6 +41,7 @@ import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.map.DefaultMapContext;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.MapContent;
@@ -139,9 +140,10 @@ public class Prototype extends JFrame {
     private Map<String, AbstractGridCoverage2DReader> raster;
 
     /**
-     * This is the mapcontent used as a backdrop for mapComponent
+     * The MapContext api is deprecated; the replacement MapContent
+     * is being integrated with MapComponent as we speak.
      */
-    private MapContent map;
+    private MapContext map;
 
     private SimpleFeatureCollection faces;
 
@@ -286,11 +288,11 @@ public class Prototype extends JFrame {
      * @param rasterFile the GeoTIFF file
      * @param shpFile the Shapefile
      */
-    private MapContent createMap(DefaultRepository repo2,
+    private MapContext createMap(DefaultRepository repo2,
             Map<String, AbstractGridCoverage2DReader> raster2) {
 
         // Set up a MapContext with the two layers
-        final MapContent map = new MapContent();
+        final MapContext map = new DefaultMapContext();
 
         // use rasters as "basemap"
         for (Entry<String, AbstractGridCoverage2DReader> entry : raster.entrySet()) {
