@@ -344,7 +344,7 @@ public class Prototype extends JFrame {
      * the input csv data file
      */
     protected void loadSites() {
-        File csvFile = new File("data/locations.csv");
+        File csvFile = new File("data/senario.csv");
 
         if (csvFile.exists()) {
             try {
@@ -362,7 +362,6 @@ public class Prototype extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         getContentPane().add(scrollPane, BorderLayout.SOUTH);
 
-        // scott this is the collection from csv, read this display table
         if (faces != null) {
             FeatureCollectionTableModel model = new FeatureCollectionTableModel(faces);
             table = new JTable();
@@ -404,15 +403,14 @@ public class Prototype extends JFrame {
 
         JButton zoomInBtn = new JButton(new ZoomInAction(mapPane));
         toolBar.add(zoomInBtn);
-        // cursorToolGrp.add(zoomInBtn);
 
         JButton zoomOutBtn = new JButton(new ZoomOutAction(mapPane));
         toolBar.add(zoomOutBtn);
         toolBar.setSize(800, 100);
-        // cursorToolGrp.add(zoomOutBtn);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
         getContentPane().add(mapPane, BorderLayout.CENTER);
+        getContentPane().add(table, BorderLayout.SOUTH);
         // mapFrame.setVisible(true);
     }
 
@@ -537,9 +535,19 @@ public class Prototype extends JFrame {
         builder.setCRS(DefaultGeographicCRS.WGS84); // <- Coordinate reference system
 
         // add attributes in order
-        builder.add("Location", Point.class);
-        builder.length(15).add("Name", String.class); // <- 15 chars width for name field
-        builder.length(15).add("Number", Integer.class); // <- 15 chars width for name field
+        builder.add("Identifier", Integer.class);
+        builder.add("Type", String.class);
+        builder.add("Face Format", String.class);
+        builder.add("Product Face Format", String.class);
+        builder.add("Status", String.class);
+        builder.add("Installed on", String.class);
+        builder.add("Posting Period", String.class);
+        builder.add("Area", String.class);
+        builder.add("Street", String.class);
+        builder.add("House Number", String.class);
+        builder.add("West-East Coordinates", double.class);
+        builder.add("South-North Coordinates", double.class);
+        builder.add("Rotation Angle", String.class);
 
         // build the type
         final SimpleFeatureType LOCATION = builder.buildFeatureType();
@@ -568,7 +576,7 @@ public class Prototype extends JFrame {
          * GeometryFactory will be used to create the geometry attribute of each feature (a Point
          * object for the location)
          */
-        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
+        //GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
 
@@ -582,17 +590,37 @@ public class Prototype extends JFrame {
                 if (line.trim().length() > 0) { // skip blank lines
                     String tokens[] = line.split("\\,");
 
-                    double latitude = Double.parseDouble(tokens[0]);
-                    double longitude = Double.parseDouble(tokens[1]);
-                    String name = tokens[2].trim();
-                    int number = Integer.parseInt(tokens[3].trim());
+                    int identifier = Integer.parseInt(tokens[0].trim());
+                    String type = tokens[1].trim();
+                    String faceFormat = tokens[2].trim();
+                    String productFormat = tokens[3].trim();
+                    String status = tokens[4].trim();
+                    String installed = tokens[5].trim();
+                    String posting = tokens[6].trim();
+                    String area = tokens[7].trim();
+                    String street = tokens[8].trim();
+                    String number = tokens[9].trim();
+                    double latitude = Double.parseDouble(tokens[10]);
+                    double longitude = Double.parseDouble(tokens[11]);
+                    String angle = tokens[12].trim();
 
                     /* Longitude (= x coord) first ! */
-                    Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-
-                    featureBuilder.add(point);
-                    featureBuilder.add(name);
+                    //Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+                    
+                    featureBuilder.add(identifier);
+                    featureBuilder.add(type);
+                    featureBuilder.add(faceFormat);
+                    featureBuilder.add(productFormat);
+                    featureBuilder.add(status);
+                    featureBuilder.add(installed);
+                    featureBuilder.add(posting);
+                    featureBuilder.add(area);
+                    featureBuilder.add(street);
                     featureBuilder.add(number);
+                    featureBuilder.add(latitude);
+                    featureBuilder.add(longitude);
+                    featureBuilder.add(angle);
+                    
                     SimpleFeature feature = featureBuilder.buildFeature(null);
                     collection.add(feature);
                 }
