@@ -578,9 +578,9 @@ public class Prototype extends JFrame {
     	}
     }
     
-    private static Color SELECTED_FILL_COLOR = Color.RED;
-    private static double SELECTED_FILL_OPACITY = 0.5;
-    private static Color SELECTED_STROKE_COLOR = Color.BLACK;
+    private static Color SELECTED_FILL_COLOR = Color.YELLOW;
+    private static double SELECTED_FILL_OPACITY = 0.3;
+    private static Color SELECTED_STROKE_COLOR = Color.RED;
     private static double SELECTED_STROKE_WIDTH = 3;
     private static double SELECTED_POINT_SIZE = 15.0;
     
@@ -591,7 +591,7 @@ public class Prototype extends JFrame {
     	org.geotools.styling.Symbolizer symbolizer = null;
     	org.opengis.style.Fill fill = sf.createFill(ff.literal(SELECTED_FILL_COLOR), ff.literal(SELECTED_FILL_OPACITY));
     	Stroke stroke = sf.createStroke(ff.literal(SELECTED_STROKE_COLOR), ff.literal(SELECTED_STROKE_WIDTH));
-    	Mark mark = sf.getSquareMark();
+    	Mark mark = sf.getCircleMark();
     	mark.setFill(fill);
     	mark.setStroke(stroke);
     	
