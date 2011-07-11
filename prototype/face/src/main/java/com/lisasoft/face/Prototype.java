@@ -336,21 +336,6 @@ public class Prototype extends JFrame {
                 for (String typeName : dataStore.getTypeNames()) {
                     SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
                     
-                    /*
-                    StyleFactory styleFactory = new StyleFactoryImpl();
-                    FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
-                    SLDParser stylereader = new SLDParser(styleFactory, inputStream);
-                    Style styles[] = stylereader.readXML();
-                    Style style;
-                    
-                    if(styles.length > 0) {
-                    	style = styles[0];
-                    } else {
-                    	// Create a basic style with yellow lines and no fill
-                    	style = SLD.createPolygonStyle(Color.RED, null, 0.0f);
-                    }
-                    */
-
                     Style style = SLD.createPolygonStyle(Color.RED, null, 0.0f);
                     FeatureLayer layer = new FeatureLayer(featureSource, style);
 
