@@ -3,11 +3,8 @@ package com.lisasoft.face;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -18,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -40,11 +36,9 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
-import org.geotools.map.MapContent;
 import org.geotools.map.MapContext;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -57,6 +51,7 @@ import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.action.PanAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.table.FeatureCollectionTableModel;
@@ -67,10 +62,6 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * This is a prototype application *just* showing how to integrate a MapComponent with an existing
@@ -404,13 +395,16 @@ public class Prototype extends JFrame {
         toolBar.setOrientation(JToolBar.HORIZONTAL);
         toolBar.setFloatable(false);
 
-        ButtonGroup cursorToolGrp = new ButtonGroup();
+        //ButtonGroup cursorToolGrp = new ButtonGroup();
 
         JButton zoomInBtn = new JButton(new ZoomInAction(mapPane));
         toolBar.add(zoomInBtn);
 
         JButton zoomOutBtn = new JButton(new ZoomOutAction(mapPane));
         toolBar.add(zoomOutBtn);
+        
+        JButton panBtn = new JButton(new PanAction(mapPane));
+        toolBar.add(panBtn);
         toolBar.setSize(800, 100);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
