@@ -50,12 +50,12 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.MapContext;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ContrastEnhancement;
@@ -79,6 +79,10 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * This is a prototype application *just* showing how to integrate a MapComponent with an existing
@@ -159,6 +163,8 @@ public class Prototype extends JFrame {
     private MapContext map;
 
     private SimpleFeatureCollection faces;
+    
+    private static final String FEAUTURE_EPSG = "EPSG:2056";
 
     /**
      * Create a Prototype Frame; please call init() to configure.
@@ -401,6 +407,9 @@ public class Prototype extends JFrame {
         
         //FeatureLayer layer = new FeatureLayer( faces, style );
         //map.addLayer( layer );
+        
+        FeatureLayer layer = new FeatureLayer( faces, style );
+        map.addLayer( layer );
     }
 
     @SuppressWarnings("deprecation")
@@ -586,9 +595,12 @@ public class Prototype extends JFrame {
 
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName("Location");
-        builder.setCRS(DefaultGeographicCRS.WGS84); // <- Coordinate reference system
-
-        // add attributes in order
+        
+        // from email
+        // Martin just got back to me and tells me that we have : ch1903
+        // http://spatialreference.org/ref/?search=ch1903
+        builder.setSRS(FEAUTURE_EPSG); // from email 
+        
         builder.add("Identifier", Integer.class);
         builder.add("Type", String.class);
         builder.add("Face Format", String.class);
@@ -599,8 +611,7 @@ public class Prototype extends JFrame {
         builder.add("Area", String.class);
         builder.add("Street", String.class);
         builder.add("House Number", String.class);
-        builder.add("West-East Coordinates", double.class);
-        builder.add("South-North Coordinates", double.class);
+        builder.add("Point", Point.class);
         builder.add("Rotation Angle", String.class);
         builder.add("Category", String.class);
 
@@ -631,7 +642,7 @@ public class Prototype extends JFrame {
          * GeometryFactory will be used to create the geometry attribute of each feature (a Point
          * object for the location)
          */
-        //GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
 
@@ -661,7 +672,7 @@ public class Prototype extends JFrame {
                     String category = tokens[13].trim();
 
                     /* Longitude (= x coord) first ! */
-                    //Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+                    Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
                     
                     featureBuilder.add(identifier);
                     featureBuilder.add(type);
@@ -673,8 +684,7 @@ public class Prototype extends JFrame {
                     featureBuilder.add(area);
                     featureBuilder.add(street);
                     featureBuilder.add(number);
-                    featureBuilder.add(latitude);
-                    featureBuilder.add(longitude);
+                    featureBuilder.add(point);
                     featureBuilder.add(angle);
                     featureBuilder.add(category);
                     
