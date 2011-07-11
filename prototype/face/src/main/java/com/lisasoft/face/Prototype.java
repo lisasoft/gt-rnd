@@ -553,9 +553,12 @@ public class Prototype extends JFrame {
 
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName("Location");
-        builder.setCRS(DefaultGeographicCRS.WGS84); // <- Coordinate reference system
-
-        // add attributes in order
+        
+        // from email
+        // Martin just got back to me and tells me that we have : ch1903
+        // http://spatialreference.org/ref/?search=ch1903
+        builder.setSRS("EPSG:2056"); // from email 
+        
         builder.add("Identifier", Integer.class);
         builder.add("Type", String.class);
         builder.add("Face Format", String.class);
