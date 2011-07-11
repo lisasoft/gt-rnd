@@ -479,16 +479,17 @@ public class Prototype extends JFrame {
         
         selectButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		new CursorTool() {
-        			
-        			@Override
-        			public void onMouseClicked(MapMouseEvent ev) {
-        				selectFeatures(ev);
-        			}
-        		};
+        		mapPane.setCursorTool(
+        				new CursorTool() {
+
+        					@Override
+        					public void onMouseClicked(MapMouseEvent ev) {
+        						selectFeatures(ev);
+        					}
+        				});
         	}
         });
-        
+
         toolBar.setSize(800, 100);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
@@ -512,12 +513,13 @@ public class Prototype extends JFrame {
     	ReferencedEnvelope bbox = new ReferencedEnvelope(
     			worldRect, mapPane.getMapContext().getCoordinateReferenceSystem());
     	
-    	/*
-    	 * Create a Filter selecting the from the bounding box.
-    	 */
-    	Filter filter = ff.intersects(ff.property(faces.getSchema().getGeometryDescriptor().getName()), ff.literal(bbox));
-    	
     	try {
+    		ReferencedEnvelope filterBox = bbox.transform(faces.getSchema().getCoordinateReferenceSystem(), true);
+
+    		/*
+    		 * Create a Filter selecting the from the bounding box.
+    		 */
+    		Filter filter = ff.intersects(ff.property(faces.getSchema().getGeometryDescriptor().getName()), ff.literal(filterBox));
     		SimpleFeatureCollection selectedFeatures = faces.subCollection(filter);
     		SimpleFeatureIterator iter = selectedFeatures.features();
     		Set<FeatureId> ids = new HashSet<FeatureId>();
@@ -532,17 +534,21 @@ public class Prototype extends JFrame {
     		}
 
     		if(ids.isEmpty()) {
+    			System.out.println("Found no selections.  Removing selection layer.");
     			map.removeLayer(selectedFaceLayer);
     			selectedFaceLayer = null;
     		} else {
+    			System.out.println("Selections found.");
     			style = createSelectedStyle(ids);
     			/*
     			 * This is evil lazy selection layer creation.
     			 */
     			if(selectedFaceLayer == null) {
+    				System.out.println("  Creating selection layer.");
     				selectedFaceLayer = new FeatureLayer( faces, style );
     				map.addLayer(selectedFaceLayer);
     			} else {
+    				System.out.println("  Resetting layer style.");
     				selectedFaceLayer.setStyle(style);
     			}
     		}
