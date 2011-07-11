@@ -34,6 +34,29 @@ HOW TO RUN ECLIPSE
 4. Right click on "Prototype" and run as a Java application
 
 
+h2. Tasks
+
+0. SH: Commit change to EPSG code so that the triangles show up in the correct location.
+1. SH: Use a list selection model on the Table to update the selectedLayer filter; using the
+   existing code as an example of selection using a set of feature IDs.
+2. SH: DuplicatingStyleVisitor needed to make relative icon references be absolute
+   (alternatives listed below) but this one we can perform in our application. See examples
+   in geotools docs; should be a class with one method overriden to peform the transformation.
+   similar to XSLT but for object data strutures.
+   This is used to allow the correct Icon for "Face" display.
+   Note the style can also use a Label (in blue) and a line from the point location to the label
+   offset. This line can be drawn with a line symbolizer using a geometry function (rather than
+   just a propertyName reference).
+3. JG: DAO is code complete producing features; need to improve test coverage
+   and then migrate Prototype to use it use it (in feature form).
+4. SH: Create a table model based on the DAO object List<Face>
+5. ML: Refactor working code from prototype to MapComponent; tools will need to be seperate classes
+   etc...
+6. SH: Ask MapComponent to work with Objects directly for the table model
+7. SH: Ask MapComponent to store the selected features; and base the selected layer and tool selection
+   and list selection model off this
+8. Review requirements for supported status with mbedward (see below)
+
 h2. Feedback on gt-swing
 
 The following issues were identified that made coding more verbose than needed:
