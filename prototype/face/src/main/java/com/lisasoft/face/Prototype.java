@@ -748,17 +748,17 @@ public class Prototype extends JFrame {
      */
     public static void main(String[] args) throws Exception {
         // marked final so we can refer to it from a window listener
-    	final JFrame app = new JFrame();
+//    	final JFrame app = new JFrame();
 
-//        final Prototype app = new Prototype();
+        final Prototype app = new Prototype();
 
         // configuration
-//        app.init();
+        app.init();
 
         // display
         // app.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    	MapComponentFactory factory = new MapComponentFactory();
-    	MapComponent component = factory.buildMapComponent(app);
+//    	MapComponentFactory factory = new MapComponentFactory();
+//    	MapComponent component = factory.buildMapComponent(app);
     	
 
         // use anonymous WindowListener to clean up ..
