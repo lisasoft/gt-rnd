@@ -191,7 +191,7 @@ public class Prototype extends JFrame {
     private FeatureLayer facesLayer;
     private FeatureLayer selectedFaceLayer;
     
-    private static final String FEAUTURE_EPSG = "EPSG:2056";
+    private static final String FEATURE_EPSG = "EPSG:4326";
 
     /**
      * Create a Prototype Frame; please call init() to configure.
@@ -768,7 +768,7 @@ public class Prototype extends JFrame {
         // from email
         // Martin just got back to me and tells me that we have : ch1903
         // http://spatialreference.org/ref/?search=ch1903
-        builder.setSRS(FEAUTURE_EPSG); // from email 
+        builder.setSRS(FEATURE_EPSG); // from email 
         
         builder.add("Identifier", Integer.class);
         builder.add("Type", String.class);
