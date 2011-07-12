@@ -56,7 +56,11 @@ public class FaceDAO {
     public FaceDAO(File csvFile) throws IOException {
         contents = new CopyOnWriteArrayList<Face>( load(csvFile) );
     }
-
+    
+    public FaceDAO(List<FaceImpl> faceList) throws IOException {
+        contents = new CopyOnWriteArrayList<Face>( faceList );
+    }
+    
     static     Point getLocation(Face face ) {
         double x = face.getWestOstKoordinate().doubleValue();
         double y = face.getSuedNordKoordinate().doubleValue();
