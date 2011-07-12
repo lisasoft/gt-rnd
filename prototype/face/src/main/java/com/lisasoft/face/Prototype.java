@@ -16,8 +16,13 @@ package com.lisasoft.face;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,9 +30,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -45,12 +52,14 @@ import org.geotools.data.DefaultRepository;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
@@ -59,26 +68,32 @@ import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ContrastEnhancement;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Mark;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyleFactoryImpl;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.InfoAction;
 import org.geotools.swing.action.PanAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
+import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.table.FeatureCollectionTableModel;
+import org.geotools.swing.tool.CursorTool;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
+import org.opengis.style.Stroke;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -153,7 +168,11 @@ public class Prototype extends JFrame {
      * to select Face content.
      */
     private JToolBar toolBar;
-
+    
+    /**
+     * TBD
+     */
+    private JMapPane mapPane;
     /**
      * Repository used to hold on to DataStores.
      */
@@ -169,8 +188,10 @@ public class Prototype extends JFrame {
     private MapContext map;
 
     private SimpleFeatureCollection faces;
+    private FeatureLayer facesLayer;
+    private FeatureLayer selectedFaceLayer;
     
-    private static final String FEAUTURE_EPSG = "EPSG:4326";
+    private static final String FEAUTURE_EPSG = "EPSG:2056";
 
     /**
      * Create a Prototype Frame; please call init() to configure.
@@ -218,8 +239,8 @@ public class Prototype extends JFrame {
      * be cleaned up).
      */
     private void loadData() {
-        //File directory = new File(".");
-        File directory = new File("./data");
+        File directory = new File(".");
+//        File directory = new File("./data");
         if (directory.exists() && directory.isDirectory()) {
             // check for shapefiles
             //
@@ -342,21 +363,6 @@ public class Prototype extends JFrame {
                 for (String typeName : dataStore.getTypeNames()) {
                     SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
                     
-                    /*
-                    StyleFactory styleFactory = new StyleFactoryImpl();
-                    FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
-                    SLDParser stylereader = new SLDParser(styleFactory, inputStream);
-                    Style styles[] = stylereader.readXML();
-                    Style style;
-                    
-                    if(styles.length > 0) {
-                    	style = styles[0];
-                    } else {
-                    	// Create a basic style with yellow lines and no fill
-                    	style = SLD.createPolygonStyle(Color.RED, null, 0.0f);
-                    }
-                    */
-
                     Style style = SLD.createPolygonStyle(Color.RED, null, 0.0f);
                     FeatureLayer layer = new FeatureLayer(featureSource, style);
 
@@ -378,31 +384,43 @@ public class Prototype extends JFrame {
         return map;
 
     }
+    
+    protected SimpleFeatureCollection createSiteCollection() {
+        File csvFile = new File("data/senario.csv");
+        SimpleFeatureCollection collection;
+
+        if (csvFile.exists()) {
+        	try {
+        		return getFeaturesFromFile(csvFile);
+        	} catch (Throwable eek) {
+        		System.out.println("Could not load faces:" + eek);
+        	}
+        }
+        /*
+         * eww
+         */
+        return null;
+    }
 
     /*
      * We create a FeatureCollection into which we will put each Feature created from a record in
      * the input csv data file
      */
     protected void loadSites() {
-        File csvFile = new File("data/senario.csv");
 
-        if (csvFile.exists()) {
-        	try {
-        		faces = getFeaturesFromFile(csvFile);
-        	} catch (Throwable eek) {
-        		System.out.println("Could not load faces:" + eek);
-        	}
-        }
-
+    	/*
+    	 * First handle the actual renderable goodness.
+    	 */
         Style style;
         try {
-        	StyleFactory styleFactory = new StyleFactoryImpl();
         	FileInputStream inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
-        	SLDParser stylereader = new SLDParser(styleFactory, inputStream);
+        	SLDParser stylereader = new SLDParser(sf, inputStream);
+        	
         	Style styles[] = stylereader.readXML();
 
         	if(styles.length > 0) {
-        		style = styles[0];
+//        		style = styles[0];
+        		style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
         	} else {
         		// Create a basic style with yellow lines and no fill
         		style = SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
@@ -414,8 +432,20 @@ public class Prototype extends JFrame {
         //FeatureLayer layer = new FeatureLayer( faces, style );
         //map.addLayer( layer );
         
-        FeatureLayer layer = new FeatureLayer( faces, style );
-        map.addLayer( layer );
+        faces = createSiteCollection();
+        facesLayer = new FeatureLayer(faces, style);
+        map.addLayer(facesLayer);
+        
+        /*
+         * Now let's worry about the selection layer.
+         */
+		SimpleFeatureCollection newCollection = createSiteCollection();
+		Style selectionStyle = createSelectedStyle(new HashSet<FeatureId>());
+		selectedFaceLayer = new FeatureLayer(newCollection, style);
+		map.addLayer(selectedFaceLayer);
+//		map.layers().add(0, selectedFaceLayer);
+
+
     }
 
     @SuppressWarnings("deprecation")
@@ -450,7 +480,7 @@ public class Prototype extends JFrame {
          * map.getLayer(0).setStyle(style); mapFrame.repaint(); } } });
          */
 
-        JMapPane mapPane = new JMapPane();
+        mapPane = new JMapPane();
 
         // set a renderer to use with the map pane
         mapPane.setRenderer(new StreamingRenderer());
@@ -475,12 +505,145 @@ public class Prototype extends JFrame {
         JButton infoBtn = new JButton(new InfoAction(mapPane));
         toolBar.add(infoBtn);
         
+        JButton selectButton = new JButton("Select");
+        toolBar.add(selectButton);
+        
+        selectButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		mapPane.setCursorTool(
+        				new CursorTool() {
+
+        					@Override
+        					public void onMouseClicked(MapMouseEvent ev) {
+        						selectFeatures(ev);
+        					}
+        				});
+        	}
+        });
+
         toolBar.setSize(800, 100);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
         getContentPane().add(mapPane, BorderLayout.CENTER);
         getContentPane().add(scrollpane, BorderLayout.SOUTH);
         // mapFrame.setVisible(true);
+    }
+    
+    private static int SELECTION_BUFFER_WIDTH = 10;
+    void selectFeatures(MapMouseEvent ev) {
+    	/*
+    	 * Create a small selection region.
+    	 */
+    	java.awt.Point screenPos = ev.getPoint();
+    	Rectangle screenRect = new Rectangle(
+    			screenPos.x-(SELECTION_BUFFER_WIDTH/2), 
+    			screenPos.y-(SELECTION_BUFFER_WIDTH/2), 
+    			SELECTION_BUFFER_WIDTH, SELECTION_BUFFER_WIDTH);
+    	
+    	/*
+    	 * Transform the screen rectangle to map coordinates.
+    	 */
+    	AffineTransform screenToWorld = mapPane.getScreenToWorldTransform();
+    	Rectangle2D worldRect = screenToWorld.createTransformedShape(screenRect).getBounds2D();
+    	ReferencedEnvelope bbox = new ReferencedEnvelope(
+    			worldRect, mapPane.getMapContext().getCoordinateReferenceSystem());
+    	
+    	try {
+    		ReferencedEnvelope filterBox = bbox.transform(faces.getSchema().getCoordinateReferenceSystem(), true);
+
+    		/*
+    		 * Create a Filter selecting the from the bounding box.
+    		 */
+    		Filter filter = ff.intersects(ff.property(faces.getSchema().getGeometryDescriptor().getName()), ff.literal(filterBox));
+    		SimpleFeatureCollection selectedFeatures = faces.subCollection(filter);
+    		SimpleFeatureIterator iter = selectedFeatures.features();
+    		Set<FeatureId> ids = new HashSet<FeatureId>();
+    		try {
+    			while(iter.hasNext()) {
+    				SimpleFeature feature = iter.next();
+    				ids.add(feature.getIdentifier());
+//    				System.out.println("ID - " + feature.getIdentifier());
+    			}
+    		} finally {
+    			iter.close();
+    		}
+    		
+    		System.out.println("Selected " + ids.size() + " features.");
+
+    		Style style = createSelectedStyle(ids);
+    		selectedFaceLayer.setStyle(style);
+   	        mapPane.repaint();
+
+    	} catch(Exception ex) {
+    		ex.printStackTrace();
+    		return;
+    	}
+    }
+    
+    private static Color SELECTED_FILL_COLOR = Color.YELLOW;
+    private static double SELECTED_FILL_OPACITY = 0.0;
+    private static Color SELECTED_STROKE_COLOR = new Color(255, 0, 255);
+    private static double SELECTED_STROKE_WIDTH = 2.5;
+    private static double SELECTED_POINT_SIZE = 20.0;
+    
+    private Style createSelectedStyle(Set<FeatureId> ids) {
+    	/*
+    	 * First create the normal selection styler.
+    	 */
+    	org.geotools.styling.Symbolizer symbolizer = null;
+    	org.opengis.style.Fill fill = sf.createFill(ff.literal(SELECTED_FILL_COLOR), ff.literal(SELECTED_FILL_OPACITY));
+    	Stroke stroke = sf.createStroke(ff.literal(SELECTED_STROKE_COLOR), ff.literal(SELECTED_STROKE_WIDTH));
+    	Mark mark = sf.getCircleMark();
+    	mark.setFill(fill);
+    	mark.setStroke(stroke);
+    	
+    	org.geotools.styling.Graphic graphic = sf.createDefaultGraphic();
+    	graphic.graphicalSymbols().clear();
+    	graphic.graphicalSymbols().add(mark);
+    	graphic.setSize(ff.literal(SELECTED_POINT_SIZE));
+    	
+    	symbolizer = sf.createPointSymbolizer(graphic, faces.getSchema().getGeometryDescriptor().getName().toString());
+    	
+    	
+    	org.geotools.styling.Rule selectedRule = sf.createRule();
+    	selectedRule.symbolizers().add(symbolizer);
+    	if(ids == null || ids.isEmpty()) {
+    		System.out.println("Empty id set found.  Creating EXCLUDE filter.");
+    		selectedRule.setFilter(Filter.EXCLUDE);
+    	} else {
+    		System.out.println("" + ids.size() + " ids found.  Creating filter.");
+    		selectedRule.setFilter(ff.id(ids));
+    	}
+    	
+    	FeatureTypeStyle fts = sf.createFeatureTypeStyle();
+    	fts.rules().add(selectedRule);
+    	
+    	/*
+    	 * Next the other styler.
+    	 */
+    	/*
+    	Mark otherMark = sf.getCircleMark();
+    	org.opengis.style.Fill otherFill = sf.createFill(ff.literal(SELECTED_FILL_COLOR), ff.literal(0.0));
+    	mark.setStroke(stroke);
+    	mark.setFill(otherFill);
+    	
+    	org.geotools.styling.Graphic otherGraphic = sf.createDefaultGraphic();
+    	otherGraphic.graphicalSymbols().clear();
+    	otherGraphic.graphicalSymbols().add(otherMark);
+    	otherGraphic.setSize(ff.literal(SELECTED_POINT_SIZE));
+    	
+    	org.geotools.styling.Symbolizer otherSymbolizer = 
+    		sf.createPointSymbolizer(graphic, faces.getSchema().getGeometryDescriptor().getName().toString());
+    	org.geotools.styling.Rule otherRule = sf.createRule();
+    	otherRule.setElseFilter(true);
+    	otherRule.symbolizers().add(otherSymbolizer);
+    	
+    	fts.rules().add(otherRule);
+    	*/
+    	
+    	Style style = sf.createStyle();
+    	style.featureTypeStyles().add(fts);
+    	return style;
     }
 
     /**
@@ -679,7 +842,6 @@ public class Prototype extends JFrame {
 
                     /* Longitude (= x coord) first ! */
                     Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-                    //Point point = geometryFactory.createPoint(new Coordinate(latitude,longitude));
                     
                     featureBuilder.add(identifier);
                     featureBuilder.add(type);
@@ -695,7 +857,8 @@ public class Prototype extends JFrame {
                     featureBuilder.add(angle);
                     featureBuilder.add(category);
                     
-                    SimpleFeature feature = featureBuilder.buildFeature(null);
+                    System.out.println("face." + identifier);
+                    SimpleFeature feature = featureBuilder.buildFeature("face." + identifier);
                     collection.add(feature);
                 }
             }
