@@ -37,7 +37,7 @@ import com.lisasoft.face.table.FaceTable;
  * *filter* used to display selected faces; and send a FaceTable update event</li>
  * <li>Custom DataStore used to present the Faces provided to MapComponent to the GeoTools rendering
  * system. This is used by *two* layers. One layer to display the sites; and a second to display the
- * selection (These two lays are added to the MapContent).</li>
+ * selection (These two layerss are added to the MapContent).</li>
  * </ul>>
  * 
  * @author Scott Henderson (LISASoft)
