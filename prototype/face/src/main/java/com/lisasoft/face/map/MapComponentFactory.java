@@ -69,10 +69,9 @@ public class MapComponentFactory {
 
     /** Used to hold on to rasters */
     private Map<String, AbstractGridCoverage2DReader> raster;
-    private MapContext map; 
-    private JMapPane mapPane;
+//    private JMapPane mapPane;
     
-    private File dataRoot = new File(".");
+    private File dataRoot = new File("./data");
     
     public MapComponentFactory() {
     	repo = new DefaultRepository();
@@ -82,11 +81,10 @@ public class MapComponentFactory {
 	public MapComponent buildMapComponent(JFrame parent) {
 		loadShapefileData();
 		loadRaster();
-		
-		map = createMap(repo, raster);
+		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
 		
 		MapComponent component = new MapComponentImpl(mapPane);
-		initUserInterface(parent, map, component);
+		initUserInterface(parent, mapPane, map, component);
 		
 		return component;
 	}
@@ -242,7 +240,7 @@ public class MapComponentFactory {
     
     private JTable table;
     
-    private void initUserInterface(JFrame parent, MapContext map, MapComponent component) {
+    private JMapPane initUserInterface(JFrame parent, JMapPane mapPane, MapContext map, MapComponent component) {
         JToolBar toolBar = null;
         
         parent.getContentPane().setLayout(new BorderLayout());
@@ -282,13 +280,11 @@ public class MapComponentFactory {
          * map.getLayer(0).setStyle(style); mapFrame.repaint(); } } });
          */
 
-        mapPane = new JMapPane();
-
         // set a renderer to use with the map pane
         mapPane.setRenderer(new StreamingRenderer());
 
         // set the map context that contains the layers to be displayed
-        mapPane.setMapContext(new MapContext(map));
+        mapPane.setMapContext(map);
         mapPane.setSize(800, 500);
 
         toolBar = new JToolBar();
@@ -320,6 +316,7 @@ public class MapComponentFactory {
 //        	parent.getContentPane().add(scrollpane, BorderLayout.SOUTH);
 //        }
         // mapFrame.setVisible(true);
+        return mapPane;
     }
 
 }
