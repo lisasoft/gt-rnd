@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import org.geotools.map.MapContext;
 import org.geotools.swing.JMapPane;
 
 import com.lisasoft.face.data.Face;
@@ -32,6 +33,13 @@ import com.lisasoft.face.data.Face;
  */
 public class MapComponentImpl extends JPanel implements MapComponent {
     private static final long serialVersionUID = 152022981506025080L;
+    private MapContext map;
+    private JMapPane mapPane;
+    
+    MapComponentImpl(MapContext map, JMapPane mapPane) {
+    	this.mapPane = mapPane;
+    	this.map = map;
+    }
 
     public List<? extends Face> getFaces() {
         return null;
