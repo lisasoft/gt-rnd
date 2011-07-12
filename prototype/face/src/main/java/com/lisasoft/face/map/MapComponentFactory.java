@@ -85,7 +85,7 @@ public class MapComponentFactory {
 		
 		map = createMap(repo, raster);
 		
-		MapComponent component = new MapComponentImpl(map, mapPane);
+		MapComponent component = new MapComponentImpl(mapPane);
 		initUserInterface(parent, map, component);
 		
 		return component;

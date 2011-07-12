@@ -14,6 +14,7 @@
 package com.lisasoft.face.map;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JPanel;
 
@@ -36,9 +37,9 @@ public class MapComponentImpl extends JPanel implements MapComponent {
     private MapContext map;
     private JMapPane mapPane;
     
-    MapComponentImpl(MapContext map, JMapPane mapPane) {
+    MapComponentImpl(JMapPane mapPane) {
     	this.mapPane = mapPane;
-    	this.map = map;
+    	this.map = mapPane.getMapContext();
     }
 
     public List<? extends Face> getFaces() {
