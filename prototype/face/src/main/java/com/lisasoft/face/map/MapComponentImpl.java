@@ -14,9 +14,14 @@
 package com.lisasoft.face.map;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JPanel;
+import javax.swing.event.EventListenerList;
 
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.data.DataStore;
+import org.geotools.data.DefaultRepository;
 import org.geotools.swing.JMapPane;
 
 import com.lisasoft.face.data.Face;
@@ -33,6 +38,19 @@ import com.lisasoft.face.data.Face;
 public class MapComponentImpl extends JPanel implements MapComponent {
     private static final long serialVersionUID = 152022981506025080L;
 
+    /**
+     * TBD
+     */
+    private JMapPane mapPane;
+    /**
+     * Repository used to hold on to DataStores.
+     */
+    private DefaultRepository repo;
+
+    /** Used to hold on to rasters */
+    private Map<String, AbstractGridCoverage2DReader> raster;
+    
+    // MAP COMPONENT INTERFACE    
     public List<? extends Face> getFaces() {
         return null;
     }
@@ -48,9 +66,21 @@ public class MapComponentImpl extends JPanel implements MapComponent {
     }
 
     public void addMapSelectionListener(SelectionListener listener) {
+        listenerList.add(SelectionListener.class, listener );
     }
 
     public void removeMapSelectionListener(SelectionListener listener) {
+        listenerList.remove(SelectionListener.class, listener );
+    }
+    
+    public void dispose() {
+        for (DataStore dataStore : repo.getDataStores()) {
+            try {
+                dataStore.dispose();
+            } catch (Throwable eek) {
+                System.err.print("Error cleaning up " + dataStore + ":" + eek);
+            }
+        }
     }
 
 }
