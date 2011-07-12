@@ -45,6 +45,14 @@ import com.vividsolutions.jts.geom.Point;
  * @author Jody Garnett (LISAsoft)
  */
 public class FaceDAO {
+    
+    /**
+     * Change this to match the EPSG code for your spatial reference system.
+     * 
+     * See: http://spatialreference.org/ref/?search=ch1903
+     */
+    public static String EPSG_CODE = "EPSG:2056";
+    
     static GeometryFactory gf = JTSFactoryFinder.getGeometryFactory(null);
 
     /**

@@ -57,13 +57,6 @@ public class FacePrototype extends JFrame {
     private static final long serialVersionUID = 3738236346475642092L;
     
     /**
-     * Change this to match the EPSG code for your spatial reference system.
-     * 
-     * See: http://spatialreference.org/ref/?search=ch1903
-     */
-    public static String EPSG_CODE = "EPSG:2056";
-    
-    /**
      * This is the map component; it handles all "GIS" functionality
      * and is just treated as a display of Face POJOs similar to a table.
      * <p>
@@ -90,6 +83,7 @@ public class FacePrototype extends JFrame {
     public void loadFaces() throws IOException {
         File csvFile = null;
         List<Face> faces = FaceDAO.load( csvFile );
+        map.setFaces(faces);
     }
     
     /**
