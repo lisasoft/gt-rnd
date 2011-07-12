@@ -88,7 +88,10 @@ Required work:
   
 * Test case coverage is low; may be able to make the argument that the coverage by the tutorial
   code is more than sufficient to keep the API stable
-  
+
+* Small trouble sharing data between base map and selection layer
+  https://jira.codehaus.org/browse/GEOT-3716
+    
 * JMapPane handles a single background MapContent; it would be good to use a second BufferedImage
   for draw quick feedback on (such as feedback from tools).
   Motivation: This would prevent the entire map needing to redraw to show selection.
