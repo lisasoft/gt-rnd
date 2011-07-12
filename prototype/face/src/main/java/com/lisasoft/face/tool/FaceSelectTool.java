@@ -91,7 +91,6 @@ public class FaceSelectTool extends CursorTool implements ActionListener {
 			SimpleFeature feature;
     		//unselect all rows in table if no feature is selected.
 			if(ids.size() == 0){
-				
 				table.clearSelection();
 			} else {
 				//features selected, go through table and highlight row
