@@ -13,6 +13,7 @@
  */
 package com.lisasoft.face.map;
 
+import java.util.EventListener;
 import java.util.List;
 
 import com.lisasoft.face.data.Face;
@@ -31,7 +32,7 @@ import com.lisasoft.face.data.Face;
  */
 public interface MapComponent {
     
-    public interface SelectionListener {
+    public interface SelectionListener extends EventListener {
         public void selectionChanged();
     }
     /**
