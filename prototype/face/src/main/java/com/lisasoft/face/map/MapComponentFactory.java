@@ -59,6 +59,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
 
 import com.lisasoft.face.SelectedStyleFactory;
+import com.lisasoft.face.table.FaceTable;
 import com.lisasoft.face.tool.FaceSelectTool;
 
 public class MapComponentFactory {
@@ -238,30 +239,25 @@ public class MapComponentFactory {
         return prj;
     }
     
-    private JTable table;
     
     private JMapPane initUserInterface(JFrame parent, JMapPane mapPane, MapContext map, MapComponent component) {
         JToolBar toolBar = null;
+        JTable table = null;
         
         parent.getContentPane().setLayout(new BorderLayout());
 
         
-//        JScrollPane scrollPane = new JScrollPane(table);
-//        parent.getContentPane().add(scrollPane, BorderLayout.SOUTH);
-//
+        JScrollPane scrollPane = new JScrollPane(table);
+        parent.getContentPane().add(scrollPane, BorderLayout.SOUTH);
+
 //        if (component != null) {
-//        	DefaultTableModel model = new DefaultTableModel();
-//            FeatureCollectionTableModel model = new FeatureCollectionTableModel(faces);
-//            table = new JTable();
+//            table = new FaceTable(component);
 //            table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 //            table.setPreferredScrollableViewportSize(new Dimension(800, 100));
-//            table.setModel(model);
-//            
+            
 //            ListSelectionModel listSelectionModel = table.getSelectionModel();
 //            listSelectionModel.addListSelectionListener(new SelectionListener());
 //            table.setSelectionModel(listSelectionModel);
-//            
-//            scrollpane = new JScrollPane(table);
 //        }
         /*
          * mapFrame.setSize(800, 600); mapFrame.enableStatusBar(true);
@@ -312,9 +308,7 @@ public class MapComponentFactory {
 
         parent.getContentPane().add(toolBar, BorderLayout.NORTH);
         parent.getContentPane().add(mapPane, BorderLayout.CENTER);
-//        if(scrollpane != null) {
-//        	parent.getContentPane().add(scrollpane, BorderLayout.SOUTH);
-//        }
+        parent.getContentPane().add(scrollPane, BorderLayout.SOUTH);
         // mapFrame.setVisible(true);
         return mapPane;
     }
