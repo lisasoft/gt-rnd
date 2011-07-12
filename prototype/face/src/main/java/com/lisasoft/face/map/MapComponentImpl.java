@@ -13,6 +13,8 @@
  */
 package com.lisasoft.face.map;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Map;
@@ -37,13 +39,17 @@ import com.lisasoft.face.data.Face;
  * 
  * @author Jody Garnett (LISAsoft)
  */
-public class MapComponentImpl extends JPanel implements MapComponent {
+public class MapComponentImpl<T extends Face> extends JPanel implements MapComponent {
     private static final long serialVersionUID = 152022981506025080L;
     private MapContext map;
+    List<T> faceList;
+    List<T> selectedList;
     
     MapComponentImpl(JMapPane mapPane) {
     	this.mapPane = mapPane;
     	this.map = mapPane.getMapContext();
+    	this.faceList = new ArrayList<T>();
+    	this.selectedList = new ArrayList<T>();
     }
 
     /**
@@ -59,18 +65,22 @@ public class MapComponentImpl extends JPanel implements MapComponent {
     private Map<String, AbstractGridCoverage2DReader> raster;
     
     // MAP COMPONENT INTERFACE    
-    public List<? extends Face> getFaces() {
-        return null;
+    public List<T> getFaces() {
+    	return Collections.unmodifiableList(faceList);
+    }
+    
+    public void setFaces(List faces) {
+    	faceList.clear();
+    	faceList.addAll(faces);
     }
 
-    public void setFaces(List<? extends Face> faces) {
+    public List<T> getSelection() {
+    	return Collections.unmodifiableList(selectedList);
     }
 
-    public List<? extends Face> getSelection() {
-        return null;
-    }
-
-    public void setSelection(List<? extends Face> faces) {
+    public void setSelection(List faces) {
+    	selectedList.clear();
+    	selectedList.addAll(faces);
     }
 
     public void addMapSelectionListener(SelectionListener listener) {
