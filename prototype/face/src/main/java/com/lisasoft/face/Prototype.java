@@ -41,6 +41,9 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -442,6 +445,7 @@ public class Prototype extends JFrame {
 		SimpleFeatureCollection newCollection = createSiteCollection();
 		Style selectionStyle = createSelectedStyle(new HashSet<FeatureId>());
 		selectedFaceLayer = new FeatureLayer(newCollection, style);
+		System.out.println("scott: " + selectedFaceLayer.toString());
 		map.addLayer(selectedFaceLayer);
 //		map.layers().add(0, selectedFaceLayer);
 
@@ -461,6 +465,15 @@ public class Prototype extends JFrame {
             table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             table.setPreferredScrollableViewportSize(new Dimension(800, 100));
             table.setModel(model);
+            
+//            SelectionListener listener = new SelectionListener(table);
+//            table.getSelectionModel().addListSelectionListener(listener);
+//            table.getColumnModel().getSelectionModel()
+//                .addListSelectionListener(listener);
+            ListSelectionModel listSelectionModel = table.getSelectionModel();
+            listSelectionModel.addListSelectionListener(new SelectionListener());
+            table.setSelectionModel(listSelectionModel);
+            
             scrollpane = new JScrollPane(table);
         }
         /*
@@ -562,7 +575,7 @@ public class Prototype extends JFrame {
     			while(iter.hasNext()) {
     				SimpleFeature feature = iter.next();
     				ids.add(feature.getIdentifier());
-//    				System.out.println("ID - " + feature.getIdentifier());
+    				System.out.println("ID - " + feature.getIdentifier());
     			}
     		} finally {
     			iter.close();
@@ -917,5 +930,50 @@ public class Prototype extends JFrame {
 
         // even though this is the "end" of the main method the Swing thread was created
         // by setVisible above and will hold the application open (strange design really)
+    }
+    
+    class SelectionListener implements ListSelectionListener {
+
+        public void valueChanged(ListSelectionEvent e) {
+            if (e.getSource() == table.getSelectionModel()
+                  && table.getRowSelectionAllowed()) {
+                
+            	//get the selected rows
+                int[] sel = table.getSelectedRows();
+                
+                Set<FeatureId> ids = new HashSet<FeatureId>();
+                
+                for(int i = 0; i < sel.length; i++){
+                	ids.add(getFeatureId(sel[i]));
+                }
+                
+    			Style style = createSelectedStyle(ids);
+        		selectedFaceLayer.setStyle(style);
+       	        mapPane.repaint();
+                
+            } 
+
+            if (e.getValueIsAdjusting()) {
+                // The mouse button has not yet been released
+            }
+        }
+        
+        public FeatureId getFeatureId(int row){
+        	
+            SimpleFeatureIterator iter = faces.features();
+            SimpleFeature feature;
+            
+    		try {
+    			
+    			for (int i = 0; i < row; i++){
+    				feature = iter.next();
+    			}
+    			feature = iter.next();    			
+    			
+    		} finally {
+    			iter.close();
+    		}
+        	return feature.getIdentifier();
+        }
     }
 }
