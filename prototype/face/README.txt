@@ -97,3 +97,5 @@ Required work:
   Motivation: This would prevent the entire map needing to redraw to show selection.
  
 * Ability to change the icons for the Actions would be nice; this is a low priority
+
+* The name JMapPane actually caused real confusion; because it extends JPanel :-)
