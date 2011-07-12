@@ -99,6 +99,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
 import org.opengis.style.Stroke;
 
+import com.lisasoft.face.map.MapComponent;
+import com.lisasoft.face.map.MapComponentFactory;
 import com.lisasoft.face.tool.FaceSelectTool;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -746,6 +748,7 @@ public class Prototype extends JFrame {
      */
     public static void main(String[] args) throws Exception {
         // marked final so we can refer to it from a window listener
+//    	final JFrame app = new JFrame();
 
         final Prototype app = new Prototype();
 
@@ -754,6 +757,9 @@ public class Prototype extends JFrame {
 
         // display
         // app.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+//    	MapComponentFactory factory = new MapComponentFactory();
+//    	MapComponent component = factory.buildMapComponent(app);
+    	
 
         // use anonymous WindowListener to clean up ..
         app.addWindowListener(new WindowAdapter() {
@@ -774,7 +780,7 @@ public class Prototype extends JFrame {
 
             public void windowClosed(WindowEvent e) {
                 System.out.println("Finished");
-                app.cleanup();
+//                app.cleanup();
                 System.exit(0);
             }
         });

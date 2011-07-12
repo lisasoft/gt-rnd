@@ -30,7 +30,7 @@ import com.lisasoft.face.data.Face;
  * type system consisting of a FeatureType. Because this is a dynamic type system it is slihgtly
  * easier to have a "feature relational mapper" than a Java "object relational mapper".
  */
-public interface MapComponent {
+public interface MapComponent<T extends Face> {
     
     public interface SelectionListener extends EventListener {
         public void selectionChanged();
@@ -39,28 +39,28 @@ public interface MapComponent {
     * Returns the list of faces currently displayed in the GIS map component.
     * @return the list of faces currently displayed in the GIS map component
     */
-    public List<? extends Face> getFaces();
+    public List<T> getFaces();
 
     /**
     * Sets the list of faces to be displayed in the GIS map component.
     * 
     * @param faces the list of faces to be displayed in the GIS map component
     */
-    public void setFaces(List<? extends Face> faces);
+    public void setFaces(List<T> faces);
 
     /**
     * Returns the currently selected faces in the GIS map component.
     * 
     * @return the currently selected faces in the GIS map component
     */
-    public List<? extends Face> getSelection();
+    public List<T> getSelection();
 
     /**
     * Sets the currently selected faces in the GIS map component.
     * 
     * @param faces the faces to be selected in the GIS map component
     */
-    public void setSelection(List<? extends Face> faces);
+    public void setSelection(List<T> faces);
 
     /**
     * Registers a listener that is notified whenever the user changes the selection in the GIS map component by

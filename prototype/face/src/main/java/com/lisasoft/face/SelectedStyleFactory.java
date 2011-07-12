@@ -1,14 +1,22 @@
 package com.lisasoft.face;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Set;
 
+import org.geotools.coverage.GridSampleDimension;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Mark;
+import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
+import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.Symbolizer;
@@ -16,6 +24,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
+import org.opengis.style.ContrastMethod;
 import org.opengis.style.PointSymbolizer;
 import org.opengis.style.Stroke;
 
@@ -154,5 +163,91 @@ public class SelectedStyleFactory {
     
     public static Filter createBboxFilter(Name geometryDescriptor, ReferencedEnvelope filterBox) {
     	return ff.intersects(ff.property(geometryDescriptor), ff.literal(filterBox));
+    }
+    
+    /**
+     * This method examines the names of the sample dimensions in the provided coverage looking for
+     * "red...", "green..." and "blue..." (case insensitive match). If these names are not found it
+     * uses bands 1, 2, and 3 for the red, green and blue channels. It then sets up a raster
+     * symbolizer and returns this wrapped in a Style.
+     * 
+     * @param reader
+     * 
+     * @return a new Style object containing a raster symbolizer set up for RGB image
+     */
+    public static Style createRasterStyle(AbstractGridCoverage2DReader reader) {
+        GridCoverage2D cov = null;
+        try {
+            cov = reader.read(null);
+        } catch (IOException giveUp) {
+            throw new RuntimeException(giveUp);
+        }
+        // We need at least three bands to create an RGB style
+        int numBands = cov.getNumSampleDimensions();
+        if (numBands < 3) {
+            // assume the first brand
+            return createGreyscaleStyle(1);
+        }
+        // Get the names of the bands
+        String[] sampleDimensionNames = new String[numBands];
+        for (int i = 0; i < numBands; i++) {
+            GridSampleDimension dim = cov.getSampleDimension(i);
+            sampleDimensionNames[i] = dim.getDescription().toString();
+        }
+        final int RED = 0, GREEN = 1, BLUE = 2;
+        int[] channelNum = { -1, -1, -1 };
+        // We examine the band names looking for "red...", "green...", "blue...".
+        // Note that the channel numbers we record are indexed from 1, not 0.
+        for (int i = 0; i < numBands; i++) {
+            String name = sampleDimensionNames[i].toLowerCase();
+            if (name != null) {
+                if (name.matches("red.*")) {
+                    channelNum[RED] = i + 1;
+                } else if (name.matches("green.*")) {
+                    channelNum[GREEN] = i + 1;
+                } else if (name.matches("blue.*")) {
+                    channelNum[BLUE] = i + 1;
+                }
+            }
+        }
+        // If we didn't find named bands "red...", "green...", "blue..."
+        // we fall back to using the first three bands in order
+        if (channelNum[RED] < 0 || channelNum[GREEN] < 0 || channelNum[BLUE] < 0) {
+            channelNum[RED] = 1;
+            channelNum[GREEN] = 2;
+            channelNum[BLUE] = 3;
+        }
+        // Now we create a RasterSymbolizer using the selected channels
+        SelectedChannelType[] sct = new SelectedChannelType[cov.getNumSampleDimensions()];
+        ContrastEnhancement ce = sf.contrastEnhancement(ff.literal(1.0), ContrastMethod.NORMALIZE);
+        for (int i = 0; i < 3; i++) {
+            sct[i] = sf.createSelectedChannelType(String.valueOf(channelNum[i]), ce);
+        }
+        RasterSymbolizer sym = sf.getDefaultRasterSymbolizer();
+        ChannelSelection sel = sf.channelSelection(sct[RED], sct[GREEN], sct[BLUE]);
+        sym.setChannelSelection(sel);
+
+        return SLD.wrapSymbolizers(sym);
+    }
+    
+    /**
+     * Create a Style to display the specified band of the GeoTIFF image as a greyscale layer.
+     * <p>
+     * This method is a helper for createGreyScale() and is also called directly by the
+     * displayLayers() method when the application first starts.
+     * 
+     * @param band the image band to use for the greyscale display
+     * 
+     * @return a new Style instance to render the image in greyscale
+     */
+    private static Style createGreyscaleStyle(int band) {
+        ContrastEnhancement ce = sf.contrastEnhancement(ff.literal(1.0), ContrastMethod.NORMALIZE);
+        SelectedChannelType sct = sf.createSelectedChannelType(String.valueOf(band), ce);
+
+        RasterSymbolizer sym = sf.getDefaultRasterSymbolizer();
+        ChannelSelection sel = sf.channelSelection(sct);
+        sym.setChannelSelection(sel);
+
+        return SLD.wrapSymbolizers(sym);
     }
 }
