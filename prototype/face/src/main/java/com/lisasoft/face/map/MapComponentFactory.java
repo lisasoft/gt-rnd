@@ -71,7 +71,7 @@ public class MapComponentFactory {
     private Map<String, AbstractGridCoverage2DReader> raster;
 //    private JMapPane mapPane;
     
-    private File dataRoot = new File("./data");
+    private File dataRoot = new File(".");
     
     public MapComponentFactory() {
     	repo = new DefaultRepository();
