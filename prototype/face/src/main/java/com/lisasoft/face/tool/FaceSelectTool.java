@@ -76,6 +76,7 @@ public class FaceSelectTool extends CursorTool implements ActionListener {
     		SimpleFeatureCollection selectedFeatures = faces.subCollection(filter);
     		SimpleFeatureIterator iter = selectedFeatures.features();
     		Set<FeatureId> ids = new HashSet<FeatureId>();
+    		
     		try {
     			while(iter.hasNext()) {
     				SimpleFeature feature = iter.next();
