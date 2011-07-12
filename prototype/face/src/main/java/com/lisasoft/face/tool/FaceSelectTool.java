@@ -1,6 +1,5 @@
 package com.lisasoft.face.tool;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,24 +8,20 @@ import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.JTable;
+
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Mark;
 import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.CursorTool;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
-import org.opengis.style.Stroke;
 
 import com.lisasoft.face.SelectedStyleFactory;
 
@@ -35,11 +30,13 @@ public class FaceSelectTool extends CursorTool implements ActionListener {
 	JMapPane mapPane;
     private SimpleFeatureCollection faces;
     private FeatureLayer selectedFaceLayer;
+    JTable table;
 
-	public FaceSelectTool(JMapPane pane, SimpleFeatureCollection faces, FeatureLayer selecetdFaceLayer) {
+	public FaceSelectTool(JMapPane pane, SimpleFeatureCollection faces, FeatureLayer selecetdFaceLayer, JTable table) {
 		this.mapPane = pane;
 		this.faces = faces;
 		this.selectedFaceLayer = selecetdFaceLayer;
+		this.table = table;
 	}
 	public void actionPerformed(ActionEvent e) {
 		mapPane.setCursorTool(this);
@@ -90,6 +87,29 @@ public class FaceSelectTool extends CursorTool implements ActionListener {
     		}
     		
     		System.out.println("Selected " + ids.size() + " features.");
+			SimpleFeatureIterator facesIter = faces.features();
+			SimpleFeature feature;
+    		//unselect all rows in table if no feature is selected.
+			if(ids.size() == 0){
+				
+				table.clearSelection();
+			} else {
+				//features selected, go through table and highlight row
+	    		for(FeatureId id : ids){
+	        		try {	        			
+	        			for (int i = 0; i < faces.size(); i++){
+	        				feature = facesIter.next();
+	
+	            			if(feature.getIdentifier().equals(id)){
+	            				table.changeSelection(i, 0, false, false);	
+	            			}
+	        			}
+	        		} finally {
+	        			facesIter.close();
+	        		}
+	    		}
+			}
+    		
     		Style style = SelectedStyleFactory.createSelectedStyle(ids, geometryDescriptor.toString());
     		selectedFaceLayer.setStyle(style);
    	        mapPane.repaint();

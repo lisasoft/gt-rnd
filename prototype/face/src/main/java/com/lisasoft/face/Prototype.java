@@ -448,7 +448,6 @@ public class Prototype extends JFrame {
 		SimpleFeatureCollection newCollection = createSiteCollection();
 		Style selectionStyle = SelectedStyleFactory.createExcludeStyle();
 		selectedFaceLayer = new FeatureLayer(newCollection, selectionStyle);
-		System.out.println("scott: " + selectedFaceLayer.toString());
 		map.addLayer(selectedFaceLayer);
 //		map.layers().add(0, selectedFaceLayer);
 
@@ -468,6 +467,8 @@ public class Prototype extends JFrame {
             table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             table.setPreferredScrollableViewportSize(new Dimension(800, 100));
             table.setModel(model);
+            
+            
             
 //            SelectionListener listener = new SelectionListener(table);
 //            table.getSelectionModel().addListSelectionListener(listener);
@@ -524,7 +525,7 @@ public class Prototype extends JFrame {
         JButton selectButton = new JButton("Select");
         toolBar.add(selectButton);
         
-        selectButton.addActionListener(new FaceSelectTool(mapPane, faces, selectedFaceLayer));
+        selectButton.addActionListener(new FaceSelectTool(mapPane, faces, selectedFaceLayer, table));
 
         toolBar.setSize(800, 100);
 
