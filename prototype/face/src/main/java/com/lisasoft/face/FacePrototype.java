@@ -24,29 +24,21 @@ import com.lisasoft.face.table.FaceTable;
  * As such the details of this application are not all that interesting; they do serve to illustrate
  * how to:
  * <ol>
- * <li>set up a MapContent (this is used as the background for the MapComponent)</li>
  * <li>set up a MapComponent (this is actually a simple JPanel consisting of a JMapPane</li>
  * <li>set up a toolbar using some of the actions available for controlling MapComponent</li>
  * </ul> * In all cases this is straight forward application of the components provided by GeoTools.
  * <p>
  * Here is the interesting bit:
  * <ul>
- * <li>set up a MapComponentTable (actually a small JPanel consisting of a JTable working against
- * the MapComponent table model)</li>
+ * <li>set up a FaceTable (actually a small JPanel consisting of a JTable working against
+ * the MapComponentImpl)</li>
  * <li>Custom table model; just backed by the Faces provided to MapComponentTable</li>
  * <li>Custom tool to "select" Faces in the MapComponent; this will update both update an internal
- * *filter* used to display selected faces; and update a list selection model published for use with
- * MapComponentTable.</li>
+ * *filter* used to display selected faces; and send a FaceTable update event</li>
  * <li>Custom DataStore used to present the Faces provided to MapComponent to the GeoTools rendering
  * system. This is used by *two* layers. One layer to display the sites; and a second to display the
- * selection (These two lays are added to the MapContent).</li>
+ * selection (These two layerss are added to the MapContent).</li>
  * </ul>>
- * 
- * Implementation Notes:
- * <ul>
- * <li>SH: is creating the layout of this form using Eclipse 3.7 window builder tools (this is not
- * really important or interesting; just FYI)</li>
- * </ul>
  * 
  * @author Scott Henderson (LISASoft)
  * @author Jody Garnett (LISASoft)
@@ -72,6 +64,8 @@ public class FacePrototype extends JFrame {
     
     /**
      * Init method called from main
+     * 
+     * Scott: most if not all work here, basically need to implement prototype in here
      */
     public void init(){
         // layout the user interface with
@@ -83,7 +77,10 @@ public class FacePrototype extends JFrame {
     public void loadFaces() throws IOException {
         File csvFile = null;
         List<Face> faces = FaceDAO.load( csvFile );
+
+        //need to see map componenet with this faces data
         map.setFaces(faces);
+
     }
     
     /**
