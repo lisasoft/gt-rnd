@@ -89,6 +89,7 @@ import org.geotools.swing.table.FeatureCollectionTableModel;
 import org.geotools.swing.tool.CursorTool;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
@@ -98,6 +99,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
 import org.opengis.style.Stroke;
 
+import com.lisasoft.face.tool.FaceSelectTool;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
@@ -194,6 +196,7 @@ public class Prototype extends JFrame {
     private FeatureLayer facesLayer;
     private FeatureLayer selectedFaceLayer;
     
+    private static final String FACE_GEOMETRY_NAME = "Point";
     private static final String FEATURE_EPSG = "EPSG:4326";
 
     /**
@@ -443,8 +446,8 @@ public class Prototype extends JFrame {
          * Now let's worry about the selection layer.
          */
 		SimpleFeatureCollection newCollection = createSiteCollection();
-		Style selectionStyle = createSelectedStyle(new HashSet<FeatureId>());
-		selectedFaceLayer = new FeatureLayer(newCollection, style);
+		Style selectionStyle = SelectedStyleFactory.createExcludeStyle();
+		selectedFaceLayer = new FeatureLayer(newCollection, selectionStyle);
 		System.out.println("scott: " + selectedFaceLayer.toString());
 		map.addLayer(selectedFaceLayer);
 //		map.layers().add(0, selectedFaceLayer);
@@ -521,18 +524,7 @@ public class Prototype extends JFrame {
         JButton selectButton = new JButton("Select");
         toolBar.add(selectButton);
         
-        selectButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		mapPane.setCursorTool(
-        				new CursorTool() {
-
-        					@Override
-        					public void onMouseClicked(MapMouseEvent ev) {
-        						selectFeatures(ev);
-        					}
-        				});
-        	}
-        });
+        selectButton.addActionListener(new FaceSelectTool(mapPane, faces, selectedFaceLayer));
 
         toolBar.setSize(800, 100);
 
@@ -542,122 +534,7 @@ public class Prototype extends JFrame {
         // mapFrame.setVisible(true);
     }
     
-    private static int SELECTION_BUFFER_WIDTH = 10;
-    void selectFeatures(MapMouseEvent ev) {
-    	/*
-    	 * Create a small selection region.
-    	 */
-    	java.awt.Point screenPos = ev.getPoint();
-    	Rectangle screenRect = new Rectangle(
-    			screenPos.x-(SELECTION_BUFFER_WIDTH/2), 
-    			screenPos.y-(SELECTION_BUFFER_WIDTH/2), 
-    			SELECTION_BUFFER_WIDTH, SELECTION_BUFFER_WIDTH);
-    	
-    	/*
-    	 * Transform the screen rectangle to map coordinates.
-    	 */
-    	AffineTransform screenToWorld = mapPane.getScreenToWorldTransform();
-    	Rectangle2D worldRect = screenToWorld.createTransformedShape(screenRect).getBounds2D();
-    	ReferencedEnvelope bbox = new ReferencedEnvelope(
-    			worldRect, mapPane.getMapContext().getCoordinateReferenceSystem());
-    	
-    	try {
-    		ReferencedEnvelope filterBox = bbox.transform(faces.getSchema().getCoordinateReferenceSystem(), true);
 
-    		/*
-    		 * Create a Filter selecting the from the bounding box.
-    		 */
-    		Filter filter = ff.intersects(ff.property(faces.getSchema().getGeometryDescriptor().getName()), ff.literal(filterBox));
-    		SimpleFeatureCollection selectedFeatures = faces.subCollection(filter);
-    		SimpleFeatureIterator iter = selectedFeatures.features();
-    		Set<FeatureId> ids = new HashSet<FeatureId>();
-    		try {
-    			while(iter.hasNext()) {
-    				SimpleFeature feature = iter.next();
-    				ids.add(feature.getIdentifier());
-    				System.out.println("ID - " + feature.getIdentifier());
-    			}
-    		} finally {
-    			iter.close();
-    		}
-    		
-    		System.out.println("Selected " + ids.size() + " features.");
-
-    		Style style = createSelectedStyle(ids);
-    		selectedFaceLayer.setStyle(style);
-   	        mapPane.repaint();
-
-    	} catch(Exception ex) {
-    		ex.printStackTrace();
-    		return;
-    	}
-    }
-    
-    private static Color SELECTED_FILL_COLOR = Color.YELLOW;
-    private static double SELECTED_FILL_OPACITY = 0.0;
-    private static Color SELECTED_STROKE_COLOR = new Color(255, 0, 255);
-    private static double SELECTED_STROKE_WIDTH = 2.5;
-    private static double SELECTED_POINT_SIZE = 20.0;
-    
-    private Style createSelectedStyle(Set<FeatureId> ids) {
-    	/*
-    	 * First create the normal selection styler.
-    	 */
-    	org.geotools.styling.Symbolizer symbolizer = null;
-    	org.opengis.style.Fill fill = sf.createFill(ff.literal(SELECTED_FILL_COLOR), ff.literal(SELECTED_FILL_OPACITY));
-    	Stroke stroke = sf.createStroke(ff.literal(SELECTED_STROKE_COLOR), ff.literal(SELECTED_STROKE_WIDTH));
-    	Mark mark = sf.getCircleMark();
-    	mark.setFill(fill);
-    	mark.setStroke(stroke);
-    	
-    	org.geotools.styling.Graphic graphic = sf.createDefaultGraphic();
-    	graphic.graphicalSymbols().clear();
-    	graphic.graphicalSymbols().add(mark);
-    	graphic.setSize(ff.literal(SELECTED_POINT_SIZE));
-    	
-    	symbolizer = sf.createPointSymbolizer(graphic, faces.getSchema().getGeometryDescriptor().getName().toString());
-    	
-    	
-    	org.geotools.styling.Rule selectedRule = sf.createRule();
-    	selectedRule.symbolizers().add(symbolizer);
-    	if(ids == null || ids.isEmpty()) {
-    		System.out.println("Empty id set found.  Creating EXCLUDE filter.");
-    		selectedRule.setFilter(Filter.EXCLUDE);
-    	} else {
-    		System.out.println("" + ids.size() + " ids found.  Creating filter.");
-    		selectedRule.setFilter(ff.id(ids));
-    	}
-    	
-    	FeatureTypeStyle fts = sf.createFeatureTypeStyle();
-    	fts.rules().add(selectedRule);
-    	
-    	/*
-    	 * Next the other styler.
-    	 */
-    	/*
-    	Mark otherMark = sf.getCircleMark();
-    	org.opengis.style.Fill otherFill = sf.createFill(ff.literal(SELECTED_FILL_COLOR), ff.literal(0.0));
-    	mark.setStroke(stroke);
-    	mark.setFill(otherFill);
-    	
-    	org.geotools.styling.Graphic otherGraphic = sf.createDefaultGraphic();
-    	otherGraphic.graphicalSymbols().clear();
-    	otherGraphic.graphicalSymbols().add(otherMark);
-    	otherGraphic.setSize(ff.literal(SELECTED_POINT_SIZE));
-    	
-    	org.geotools.styling.Symbolizer otherSymbolizer = 
-    		sf.createPointSymbolizer(graphic, faces.getSchema().getGeometryDescriptor().getName().toString());
-    	org.geotools.styling.Rule otherRule = sf.createRule();
-    	otherRule.setElseFilter(true);
-    	otherRule.symbolizers().add(otherSymbolizer);
-    	
-    	fts.rules().add(otherRule);
-    	*/
-    	
-    	Style style = sf.createStyle();
-    	style.featureTypeStyles().add(fts);
-    	return style;
-    }
 
     /**
      * This is the opposite of init(); in this case we use it to dispose of all the DataStore we are
@@ -793,7 +670,7 @@ public class Prototype extends JFrame {
         builder.add("Area", String.class);
         builder.add("Street", String.class);
         builder.add("House Number", String.class);
-        builder.add("Point", Point.class);
+        builder.add(FACE_GEOMETRY_NAME, Point.class);
         builder.add("Angle", String.class);
         builder.add("Category", String.class);
 
@@ -947,7 +824,7 @@ public class Prototype extends JFrame {
                 	ids.add(getFeatureId(sel[i]));
                 }
                 
-    			Style style = createSelectedStyle(ids);
+                Style style = SelectedStyleFactory.createSelectedStyle(ids, FACE_GEOMETRY_NAME);
         		selectedFaceLayer.setStyle(style);
        	        mapPane.repaint();
                 
