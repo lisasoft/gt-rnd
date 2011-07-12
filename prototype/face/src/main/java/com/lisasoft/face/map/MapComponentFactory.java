@@ -79,13 +79,13 @@ public class MapComponentFactory {
         raster = new LinkedHashMap<String, AbstractGridCoverage2DReader>();
 	}
     
-	public MapComponent buildMapComponent(JFrame parent) {
+	public MapComponentImpl buildMapComponent() {
 		loadShapefileData();
 		loadRaster();
 		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
 		
-		MapComponent component = new MapComponentImpl(mapPane);
-		initUserInterface(parent, mapPane, map, component);
+		MapComponentImpl component = new MapComponentImpl(mapPane);
+		initUserInterface(mapPane, map, component);
 		
 		return component;
 	}
@@ -240,15 +240,11 @@ public class MapComponentFactory {
     }
     
     
-    private JMapPane initUserInterface(JFrame parent, JMapPane mapPane, MapContext map, MapComponent component) {
+    private JMapPane initUserInterface(JMapPane mapPane, MapContext map, MapComponent component) {
         JToolBar toolBar = null;
         JTable table = null;
         
-        parent.getContentPane().setLayout(new BorderLayout());
-
-        
         JScrollPane scrollPane = new JScrollPane(table);
-        parent.getContentPane().add(scrollPane, BorderLayout.SOUTH);
 
 //        if (component != null) {
 //            table = new FaceTable(component);
@@ -306,9 +302,9 @@ public class MapComponentFactory {
 
         toolBar.setSize(800, 100);
 
-        parent.getContentPane().add(toolBar, BorderLayout.NORTH);
-        parent.getContentPane().add(mapPane, BorderLayout.CENTER);
-        parent.getContentPane().add(scrollPane, BorderLayout.SOUTH);
+//        parent.getContentPane().add(toolBar, BorderLayout.NORTH);
+//        parent.getContentPane().add(mapPane, BorderLayout.CENTER);
+//        parent.getContentPane().add(scrollPane, BorderLayout.SOUTH);
         // mapFrame.setVisible(true);
         return mapPane;
     }
