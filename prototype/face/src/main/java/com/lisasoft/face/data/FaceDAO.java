@@ -128,7 +128,7 @@ public class FaceDAO {
             face.setType(reader.get(1));
             
             face.setFaceFormat(reader.get(2));            
-            face.setProductFormat(reader.get(2));
+            face.setProductFormat(reader.get(3));
             face.setStatus(reader.get(4));
             face.setInstalled(reader.get(5));
             face.setPeriod(reader.get(6));

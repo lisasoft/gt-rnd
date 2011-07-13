@@ -34,7 +34,7 @@ import com.lisasoft.face.data.FaceDataStore;
 import com.lisasoft.face.data.FaceImpl;
 
 /**
- * This is a quick implementaion of MapComponent using an internal JMapPane for the display
+ * This is a quick implementaion of MapComponent extending JMapPane for the display
  * of feature information.
  * <p>
  * Direct access is provided to the JMapPane allowing it to be easily configured by the
