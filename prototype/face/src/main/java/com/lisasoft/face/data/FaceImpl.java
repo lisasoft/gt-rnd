@@ -166,7 +166,7 @@ public class FaceImpl implements Face {
     public void setAngle(String angle) {
         String old = this.angle;
         this.angle = angle;
-        pcs.firePropertyChange("angle", old, angle );
+        pcs.firePropertyChange( ANGLE, old, angle );
     }
 
     public String getCategory() {

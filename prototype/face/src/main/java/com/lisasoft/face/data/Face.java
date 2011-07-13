@@ -25,7 +25,8 @@ public interface Face {
     public static final String SUED_NORD_KOORDINATE = "suedNordKoordinate";
 
     public static final String WEST_OST_KOORDINATE = "westOstKoordinate";
-
+    
+    public static final String ANGLE = "angle";
     /**
      * @return a Number, which identifies the face and is displayed? in the Gis Component
      */

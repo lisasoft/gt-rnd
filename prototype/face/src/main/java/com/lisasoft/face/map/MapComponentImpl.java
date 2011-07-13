@@ -104,8 +104,8 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         public void propertyChange(PropertyChangeEvent evt) {
             FaceImpl face = (FaceImpl) evt.getSource();
             String property = evt.getPropertyName();
-            if (Face.CATEGORY.equals(property) || Face.CATEGORY.equals(property)
-                    || Face.CATEGORY.equals(property)) {
+            if (Face.SUED_NORD_KOORDINATE.equals(property) || Face.WEST_OST_KOORDINATE.equals(property)
+                    || Face.ANGLE.equals(property)) {
                 MapComponentImpl.this.repaint();
                 // if we had seperate layers we could check if face was in the selected
                 // set and just redraw what was needed.
