@@ -41,16 +41,17 @@ public class FaceTable extends JTable {
     	
     	if (map.getFaces() != null) {
             //FeatureCollectionTableModel model = new FeatureCollectionTableModel(map.getFaces());
+    		FaceTableModel model = new FaceTableModel(map.getFaces());
             
             this.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             this.setPreferredScrollableViewportSize(new Dimension(800, 100));
-            //this.setModel(model);            
+            this.setModel(model);            
             
-            /*SelectionListener listener = new SelectionListener(this, map);
+            SelectionListener listener = new SelectionListener(this, map);
             this.getSelectionModel().addListSelectionListener(listener);
             this.getColumnModel().getSelectionModel()
                 .addListSelectionListener(listener);          
-            */
+            
         }
     }  
     
