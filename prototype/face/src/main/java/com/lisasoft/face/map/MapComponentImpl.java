@@ -16,6 +16,7 @@ package com.lisasoft.face.map;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,8 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     
     MapComponentImpl() {
     	super();
+    	this.repo = new DefaultRepository();
+    	this.raster = new HashMap<String, AbstractGridCoverage2DReader>();
     	this.faces = null;
     	this.selectedFaces = null;
     }
