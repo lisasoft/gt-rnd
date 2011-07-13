@@ -59,6 +59,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
 
 import com.lisasoft.face.SelectedStyleFactory;
+import com.lisasoft.face.data.Face;
 import com.lisasoft.face.table.FaceTable;
 import com.lisasoft.face.tool.FaceSelectTool;
 
@@ -82,10 +83,10 @@ public class MapComponentFactory {
 	public MapComponentImpl buildMapComponent() {
 		loadShapefileData();
 		loadRaster();
-		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
+//		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
 		
-		MapComponentImpl component = new MapComponentImpl();
-		initUserInterface(mapPane, map, component);
+		MapComponentImpl<Face> component = new MapComponentImpl<Face>();
+		initUserInterface(map, component);
 		
 		return component;
 	}
@@ -240,7 +241,7 @@ public class MapComponentFactory {
     }
     
     
-    private JMapPane initUserInterface(JMapPane mapPane, MapContext map, MapComponent component) {
+    private JMapPane initUserInterface(MapContext map, MapComponentImpl<Face> mapPane) {
         JToolBar toolBar = null;
         JTable table = null;
         
