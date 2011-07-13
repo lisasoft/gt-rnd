@@ -11,9 +11,12 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.CursorTool;
+import org.opengis.filter.Filter;
 
+import com.lisasoft.face.SelectedStyleFactory;
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
+import com.lisasoft.face.data.FaceFeatureSource;
 import com.lisasoft.face.map.MapComponentImpl;
 
 public class MapSelectionTool 
@@ -32,8 +35,13 @@ public class MapSelectionTool
 	}
 	
 	public void onMouseClicked(MapMouseEvent ev) {
-		ReferencedEnvelope bbox = getFilterBox(ev.getPoint());
-		
+//		ReferencedEnvelope bbox = getFilterBox(ev.getPoint());
+//		if(bbox == null)
+//			return;
+//		Filter filter = SelectedStyleFactory.createBboxFilter(
+//				FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR, bbox);
+//		SimpleFeatureCollection selectedFeatures = 
+//			mapPane.faceLayer.
 	}
 	
 	private ReferencedEnvelope getFilterBox(Point pnt) {
