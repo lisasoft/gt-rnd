@@ -66,26 +66,25 @@ import com.lisasoft.face.tool.MapSelectionTool;
 
 public class MapComponentFactory {
     private File dataRoot = new File(".");
-    
+
     public MapComponentFactory() {
-	}
-    
-	public MapComponentImpl buildMapComponent() throws IOException {
-		MapComponentImpl component = new MapComponentImpl();
-		loadShapefileData(component.repo);
-		loadRaster(component.raster);
-		MapContext map = createMap(component.repo, component.raster);
+    }
+
+    public MapComponentImpl buildMapComponent() throws IOException {
+        MapComponentImpl component = new MapComponentImpl();
+        loadShapefileData(component.repo);
+        loadRaster(component.raster);
+        MapContext map = createMap(component.repo, component.raster);
         component.setRenderer(new StreamingRenderer());
         component.setMapContext(map);
         component.setSize(800, 500);
-		
-		return component;
-	}
-	
-	public MapComponentImpl buildMapComponent(JToolBar toolBar) 
-			throws IOException {
-		MapComponentImpl component = buildMapComponent();
-		
+
+        return component;
+    }
+
+    public MapComponentImpl buildMapComponent(JToolBar toolBar) throws IOException {
+        MapComponentImpl component = buildMapComponent();
+
         toolBar.setOrientation(JToolBar.HORIZONTAL);
         toolBar.setFloatable(false);
 
@@ -94,24 +93,24 @@ public class MapComponentFactory {
 
         JButton zoomOutBtn = new JButton(new ZoomOutAction(component));
         toolBar.add(zoomOutBtn);
-        
+
         JButton panBtn = new JButton(new PanAction(component));
         toolBar.add(panBtn);
-        
+
         JButton infoBtn = new JButton(new InfoAction(component));
         toolBar.add(infoBtn);
-        
+
         JButton selectButton = new JButton("Select");
         toolBar.add(selectButton);
-        
+
         selectButton.addActionListener(new MapSelectionTool(component));
 
         toolBar.setSize(800, 100);
-		
-		return component;
-	}
-	
-	/**
+
+        return component;
+    }
+
+    /**
      * Displays a GeoTIFF file overlaid with a Shapefile
      * 
      * @param rasterFile the GeoTIFF file
@@ -143,7 +142,7 @@ public class MapComponentFactory {
             try {
                 for (String typeName : dataStore.getTypeNames()) {
                     SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
-                    
+
                     Style style = SLD.createPolygonStyle(Color.RED, null, 0.0f);
                     FeatureLayer layer = new FeatureLayer(featureSource, style);
 
@@ -165,7 +164,7 @@ public class MapComponentFactory {
         return map;
 
     }
-    
+
     private void loadShapefileData(DefaultRepository repo) {
         if (dataRoot.exists() && dataRoot.isDirectory()) {
             // check for shapefiles
@@ -192,7 +191,7 @@ public class MapComponentFactory {
             }
         }
     }
-    
+
     private void loadRaster(Map<String, AbstractGridCoverage2DReader> raster) {
         if (dataRoot.exists() && dataRoot.isDirectory()) {
             // check for geotiff files
@@ -206,7 +205,7 @@ public class MapComponentFactory {
                 try {
                     // create PRJ files for .TIF images that do not have one
                     File prj = checkPRJ(tif);
-                    
+
                     AbstractGridFormat format = GridFormatFinder.findFormat(tif);
                     AbstractGridCoverage2DReader reader = format.getReader(tif);
                     if (reader == null) {
@@ -236,7 +235,7 @@ public class MapComponentFactory {
             // prj not provided going to assume EPSG:4326 and write one out
             try {
                 // true is ask for easting / northing order to match the data
-                CoordinateReferenceSystem crs = CRS.decode("EPSG:4326",true);
+                CoordinateReferenceSystem crs = CRS.decode("EPSG:4326", true);
                 String wkt = crs.toWKT();
 
                 writer = new FileWriter(prj);
