@@ -90,9 +90,9 @@ public class FacePrototype extends JFrame {
         getContentPane().add(toolBar, BorderLayout.NORTH);
         
     	MapComponentFactory factory = new MapComponentFactory();
-    	map = factory.buildMapComponent(toolBar);
     	
     	try {
+    		map = factory.buildMapComponent(toolBar);
     		File csvFile = new File("data/senario.csv");
     		List<FaceImpl> faces = FaceDAO.load(csvFile);
     		System.out.println("loadFaces: " + faces.size());
