@@ -1,5 +1,6 @@
 package com.lisasoft.face;
 
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -81,9 +82,11 @@ public class FacePrototype extends JFrame {
         // b) FaceTable (it will listen to the MapComponent itself)
         // c) toolbar (will need to add actions? on the MapContent - perhaps pass int a toolbar?)
     	
+        getContentPane().setLayout(new BorderLayout());	
     	MapComponentFactory factory = new MapComponentFactory();
     	map = factory.buildMapComponent();
-    	
+        getContentPane().add(map, BorderLayout.CENTER);
+    	System.out.println("printy!");
         //table = new FaceTable(map);
     }
     

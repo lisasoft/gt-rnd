@@ -86,7 +86,10 @@ public class MapComponentFactory {
 //		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
 		
 		MapComponentImpl<Face> component = new MapComponentImpl<Face>();
-		initUserInterface(map, component);
+        component.setRenderer(new StreamingRenderer());
+        component.setMapContext(map);
+        component.setSize(800, 500);
+//		initUserInterface(map, component);
 		
 		return component;
 	}
@@ -247,7 +250,7 @@ public class MapComponentFactory {
     }
     
     
-    private JMapPane initUserInterface(MapContext map, MapComponentImpl<Face> mapPane) {
+    private JMapPane initUserInterface(MapComponentImpl<Face> mapPane) {
         JToolBar toolBar = null;
         JTable table = null;
         
@@ -280,11 +283,8 @@ public class MapComponentFactory {
          */
 
         // set a renderer to use with the map pane
-        mapPane.setRenderer(new StreamingRenderer());
 
         // set the map context that contains the layers to be displayed
-        mapPane.setMapContext(map);
-        mapPane.setSize(800, 500);
 
         toolBar = new JToolBar();
         toolBar.setOrientation(JToolBar.HORIZONTAL);
