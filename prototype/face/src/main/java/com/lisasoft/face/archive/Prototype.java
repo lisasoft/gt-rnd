@@ -11,7 +11,7 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  *  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  */
-package com.lisasoft.face;
+package com.lisasoft.face.archive;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -101,6 +101,7 @@ import org.opengis.style.Stroke;
 
 import com.lisasoft.face.map.MapComponent;
 import com.lisasoft.face.map.MapComponentFactory;
+import com.lisasoft.face.map.SelectedStyleFactory;
 import com.lisasoft.face.tool.FaceSelectTool;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;

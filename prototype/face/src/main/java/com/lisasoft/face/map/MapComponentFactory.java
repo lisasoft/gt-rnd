@@ -58,7 +58,6 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
 
-import com.lisasoft.face.SelectedStyleFactory;
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceImpl;
 import com.lisasoft.face.table.FaceTable;
