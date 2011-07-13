@@ -78,7 +78,7 @@ public class FaceSelectTool extends CursorTool implements ActionListener {
     		/*
     		 * Create a Filter selecting the from the bounding box.
     		 */
-    		Filter filter = SelectedStyleFactory.createBboxFilter(geometryDescriptor, filterBox);
+    		Filter filter = SelectedStyleFactory.createBboxFilter(geometryDescriptor.toString(), filterBox);
     		SimpleFeatureCollection selectedFeatures = faces.subCollection(filter);
     		SimpleFeatureIterator iter = selectedFeatures.features();
     		Set<FeatureId> ids = new HashSet<FeatureId>();
