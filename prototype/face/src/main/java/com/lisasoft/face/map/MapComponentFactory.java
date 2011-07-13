@@ -59,6 +59,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
 
 import com.lisasoft.face.SelectedStyleFactory;
+import com.lisasoft.face.data.Face;
 import com.lisasoft.face.table.FaceTable;
 import com.lisasoft.face.tool.FaceSelectTool;
 
@@ -79,13 +80,22 @@ public class MapComponentFactory {
         raster = new LinkedHashMap<String, AbstractGridCoverage2DReader>();
 	}
     
-	public MapComponentImpl buildMapComponent() {
+	public MapComponentImpl<Face> buildMapComponent() {
 		loadShapefileData();
 		loadRaster();
-		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
+//		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
 		
-		MapComponentImpl component = new MapComponentImpl(mapPane);
-		initUserInterface(mapPane, map, component);
+		MapComponentImpl<Face> component = new MapComponentImpl<Face>();
+        component.setRenderer(new StreamingRenderer());
+        component.setMapContext(map);
+        component.setSize(800, 500);
+//		initUserInterface(map, component);
+		
+		return component;
+	}
+	
+	public MapComponentImpl<Face> buildMapComponent(JToolBar toolbar) {
+		MapComponentImpl<Face> component = buildMapComponent();
 		
 		return component;
 	}
@@ -240,7 +250,7 @@ public class MapComponentFactory {
     }
     
     
-    private JMapPane initUserInterface(JMapPane mapPane, MapContext map, MapComponent component) {
+    private JMapPane initUserInterface(MapComponentImpl<Face> mapPane) {
         JToolBar toolBar = null;
         JTable table = null;
         
@@ -273,11 +283,8 @@ public class MapComponentFactory {
          */
 
         // set a renderer to use with the map pane
-        mapPane.setRenderer(new StreamingRenderer());
 
         // set the map context that contains the layers to be displayed
-        mapPane.setMapContext(map);
-        mapPane.setSize(800, 500);
 
         toolBar = new JToolBar();
         toolBar.setOrientation(JToolBar.HORIZONTAL);
