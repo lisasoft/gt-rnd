@@ -6,13 +6,8 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 
 import com.lisasoft.face.data.FaceImpl;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
 
 public class FaceTableModel extends AbstractTableModel {
 	
@@ -81,7 +76,6 @@ public class FaceTableModel extends AbstractTableModel {
             
             for(FaceImpl face : faces){
             	
-            	System.out.println(face.getNummer());
             	ArrayList<Object> row = new ArrayList<Object>();
                 row.add(face.getNummer());
                 row.add(face.getType());
@@ -89,13 +83,11 @@ public class FaceTableModel extends AbstractTableModel {
                 row.add(face.getProductFormat());
                 row.add(face.getStatus());
                 row.add(face.getInstalled());
+                row.add(face.getPeriod());
                 row.add(face.getPosting());
                 row.add(face.getArea());
                 row.add(face.getStreet());
-                row.add(face.getNumber());
-                
-                //Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-                
+                row.add(face.getNumber());                
                 row.add(face.getWestOstKoordinate());
                 row.add(face.getSuedNordKoordinate());
                 row.add(face.getAngle());
@@ -132,12 +124,6 @@ public class FaceTableModel extends AbstractTableModel {
     public FaceTableModel(List<FaceImpl> faces){
     	this.load = new TableWorker(faces);
         load.execute();
-        DefaultTableColumnModel columns = new DefaultTableColumnModel();
-        
-        
-
-        //columns.addColumn(arg0);
-        //this.schema = faces.getSchema();
     }
 
     /**
@@ -149,7 +135,6 @@ public class FaceTableModel extends AbstractTableModel {
         if( exception != null ){
             return 1;
         }
-        //return schema.getAttributeCount()+1;
         return columnNames.length;
     }
     
