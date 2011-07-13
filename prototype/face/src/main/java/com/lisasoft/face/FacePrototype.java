@@ -76,7 +76,7 @@ public class FacePrototype extends JFrame {
      * Scott: most if not all work here, basically need to implement prototype in here
      */
     public void init(){
-    	
+    	System.out.println("init");
     	// layout the user interface with
         // a) MapComponent (it will laod the MapContent itself)
         // b) FaceTable (it will listen to the MapComponent itself)
@@ -85,15 +85,33 @@ public class FacePrototype extends JFrame {
         getContentPane().setLayout(new BorderLayout());	
     	MapComponentFactory factory = new MapComponentFactory();
     	map = factory.buildMapComponent();
+    	
+      try {
+    	  File csvFile = new File("data/senario.csv");
+          List<Face> faces = FaceDAO.load(csvFile);
+          System.out.println("loadFaces: " + faces.size());
+
+          //need to see map componenet with this faces data
+          map.setFaces(faces);
+  } catch (IOException eek) {
+      System.out.println("Could not load Faces :"+eek);
+  }
+    	
+        
+    	
         getContentPane().add(map, BorderLayout.CENTER);
     	System.out.println("printy!");
-        //table = new FaceTable(map);
+        table = new FaceTable(map);
+        
+        
 
     }
     
     public void loadFaces() throws IOException {
+    	System.out.println("loadFaces");
         File csvFile = new File("data/senario.csv");
         List<Face> faces = FaceDAO.load(csvFile);
+        System.out.println("loadFaces: " + faces.size());
 
         //need to see map componenet with this faces data
         map.setFaces(faces);
@@ -118,11 +136,11 @@ public class FacePrototype extends JFrame {
         app.init();
         
         // load faces - this simulates interaction with external POJO based application
-        try {
-            app.loadFaces();
-        } catch (IOException eek) {
-            System.out.println("Could not load Faces :"+eek);
-        }
+//        try {
+//            app.loadFaces();
+//        } catch (IOException eek) {
+//            System.out.println("Could not load Faces :"+eek);
+//        }
         // display
  
         // use anonymous WindowListener to clean up ..
