@@ -55,15 +55,16 @@ h2. Tasks
 6. SH: Ask MapComponent to work with Objects directly for the table model
 7. SH: Ask MapComponent to store the selected features; and base the selected layer and tool selection
    and list selection model off this
-8. Review requirements for supported status with mbedward (see below)
+8. JG: Hook up MapComponent / FaceDAO events, property listeners and so on
+9. JG: Review requirements for supported status with mbedward (see below)
+10. JG: Go over assessment of this solution/approach
 
 h2. Feedback on gt-swing
 
 The following issues were identified that made coding more verbose than needed:
 
-* MapMouseEvent ReferencedEnvelope based on number of pixels
-  
-  https://jira.codehaus.org/browse/GEOT-3715 
+* MapMouseEvent ReferencedEnvelope based on number of pixels: https://jira.codehaus.org/browse/GEOT-3715
+  Update this issue has been closed (2 day response time).
 
 * Relative paths for ExternalGraphics (ie Icon references) is not well supported
   

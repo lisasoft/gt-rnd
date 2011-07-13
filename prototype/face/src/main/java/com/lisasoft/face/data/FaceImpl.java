@@ -14,7 +14,10 @@
 package com.lisasoft.face.data;
 
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.math.BigDecimal;
+
+import javax.swing.event.EventListenerList;
 
 import org.geotools.geometry.jts.JTSFactoryFinder;
 
@@ -28,6 +31,12 @@ import com.vividsolutions.jts.geom.Point;
  * @author Jody Garnett (LISAsoft)
  */
 public class FaceImpl implements Face {
+    private static final String CATEGORY = "category";
+
+    private static final String SUED_NORD_KOORDINATE = "suedNordKoordinate";
+
+    private static final String WEST_OST_KOORDINATE = "westOstKoordinate";
+
     static GeometryFactory gf = JTSFactoryFinder.getGeometryFactory(null);
 
     long identifier;
@@ -160,7 +169,9 @@ public class FaceImpl implements Face {
     }
 
     public void setAngle(String angle) {
+        String old = this.angle;
         this.angle = angle;
+        pcs.firePropertyChange("angle", old, angle );
     }
 
     public String getCategory() {
@@ -168,7 +179,9 @@ public class FaceImpl implements Face {
     }
 
     public void setCategory(String category) {
+        String old = this.category;
         this.category = category;
+        pcs.firePropertyChange(CATEGORY, old, angle );
     }
 
     public Long getNummer() {
@@ -180,7 +193,9 @@ public class FaceImpl implements Face {
     }
 
     public void setWestOstKoordinate(BigDecimal westOstKoordinate) {
+        BigDecimal old = this.x;
         x = westOstKoordinate;
+        pcs.firePropertyChange(WEST_OST_KOORDINATE, old, angle );
     }
 
     public BigDecimal getSuedNordKoordinate() {
@@ -188,13 +203,19 @@ public class FaceImpl implements Face {
     }
 
     public void setSuedNordKoordinate(BigDecimal suedNordKoordinate) {
+        BigDecimal old = y;
         y = suedNordKoordinate;
+        pcs.firePropertyChange(SUED_NORD_KOORDINATE, old, angle );
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    
+    PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    EventListenerList listeners = null;    
+    synchronized public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
     }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    synchronized public void removePropertyChangeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
     }
 
     @Override

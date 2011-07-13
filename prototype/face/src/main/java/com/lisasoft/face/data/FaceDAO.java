@@ -16,6 +16,8 @@ package com.lisasoft.face.data;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,8 +26,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.swing.event.EventListenerList;
 
 import org.geotools.data.csv.CSVDataStore;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -60,8 +67,81 @@ public class FaceDAO {
      */
     private CopyOnWriteArrayList<FaceImpl> contents;
 
+
+    /**
+     * This is a global list allowing outside party to listen to all of the java beans.
+     */
+    EventListenerList listeners = null;
+
+    /**
+     * Used to watch the contents of the FaceImpls; the resulting event can be used to update a
+     * DataStore or MapComponent in the event something changes.
+     */
+    private PropertyChangeListener watcher = new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+            firePropertyChange(evt);
+        }
+    };
+
     public FaceDAO(List<FaceImpl> faceList) throws IOException {
         contents = new CopyOnWriteArrayList<FaceImpl>(faceList);
+    }
+
+    /** Hook up watcher to beans contained; any changes
+     * should be passed on as feature events to the GIS; or listeners etc...
+     */
+    protected void listen( boolean listen ){
+        if( listen ){
+            for( FaceImpl face : contents ){
+                face.addPropertyChangeListener(watcher);
+            }
+        }
+        else {
+            for( FaceImpl face : contents ){
+                face.removePropertyChangeListener(watcher);
+            }
+        }        
+    }
+    /**
+     * Listen to all of the java beans managed by this data access object.
+     * @param listener
+     */
+    synchronized public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if (listeners == null) {
+            listeners = new EventListenerList();
+            listen( true );
+        }
+        listeners.add(PropertyChangeListener.class, listener);
+    }
+    /**
+     * Remove a listener from the java beans managed by this data access object.
+     * @param listener
+     */
+    synchronized public void removePropertyChangeListener(PropertyChangeListener listener) {
+        if (listeners == null)
+            return;
+        listeners.remove(PropertyChangeListener.class, listener);
+        if( listeners.getListenerCount(PropertyChangeListener.class) == 0 ){
+            listen( false );
+        }
+    }
+
+    /**
+     * Used to notify any PropertyChange listeners that a specific face has changed.
+     * <p>
+     * event.getSource() is the Face that has changed
+     * 
+     * @param evt
+     */
+    synchronized protected void firePropertyChange(PropertyChangeEvent evt) {
+        for (PropertyChangeListener listener : listeners.getListeners(PropertyChangeListener.class)) {
+            try {
+                listener.propertyChange(evt);
+            } catch (Throwable t) {
+                System.err.println("Unable to deliver property change event to " + t);
+                t.printStackTrace(System.err);
+            }
+        }
     }
 
     public FaceDAO(File csvFile) throws IOException {
@@ -80,6 +160,44 @@ public class FaceDAO {
         return contents;
     }
 
+    /**
+     * Look up face with the provided nummber/identifier. This is used to sort out selection
+     * when a selection is made from the GIS.
+     * 
+     * @param nummber
+     * @return Face, or null if not found
+     */
+    FaceImpl lookup(long nummber) {
+        for (FaceImpl face : contents) {
+            if (nummber == face.getNummer()) {
+                return face; // found!
+            }
+        }
+        return null;
+    }
+    /**
+     * Look up face with the provided nummber/identifier. This is used to sort out selection
+     * when a selection is made from the GIS.
+     * 
+     * @param nummber
+     * @return Face, or null if not found
+     */
+    List<FaceImpl> lookup(long nummbers[]) {
+        Set<Long> lookup = new HashSet<Long>();
+        for( Long nummber : nummbers ){
+            lookup.add( nummber );
+        }
+        List<FaceImpl> found = new ArrayList<FaceImpl>();
+        
+        for (FaceImpl face : contents) {
+            if (lookup.contains( face.getNummer() )) {
+                found.add( face );
+            }
+        }
+        return found;
+    }
+
+    
     /**
      * Used to access the bean info; this information is used to dynamically generate the
      * FeatureType and Features.
@@ -124,10 +242,10 @@ public class FaceDAO {
             // int identifier = Integer.parseInt(tokens[0].trim());
             long identifier = Long.parseLong(reader.get(0));
             FaceImpl face = new FaceImpl(identifier);
-            
+
             face.setType(reader.get(1));
-            
-            face.setFaceFormat(reader.get(2));            
+
+            face.setFaceFormat(reader.get(2));
             face.setProductFormat(reader.get(3));
             face.setStatus(reader.get(4));
             face.setInstalled(reader.get(5));

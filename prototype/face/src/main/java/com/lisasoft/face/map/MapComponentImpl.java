@@ -13,6 +13,8 @@
  */
 package com.lisasoft.face.map;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,19 +52,30 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
      */
     FaceDAO faces;
 
+    /**
+     * This is a map layer used to display faces provided by setFaces.
+     */
     public FeatureLayer faceLayer;
-
+    
     public FaceDataStore faceStore;
 
     /*
-     * The artifacts required for the selection layer.
+     * The artifacts required for the selection layer; it is responsible for
+     * holding onto a list.
      */
     FaceDAO selectedFaces;
 
+    /**
+     * This is a map layer used to display faces provided by setSelection
+     */
     FeatureLayer selectedLayer;
 
+    /**
+     * This is a DataStore provided by selectedFaces.
+     */
     FaceDataStore selectedStore;
 
+    
     /**
      * Repository used to hold on to DataStores.
      */
@@ -73,6 +86,28 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
      */
     Map<String, AbstractGridCoverage2DReader> raster;
 
+    /**
+     * Eating our own dog food; this internal listener redraws the map
+     * if the selection changes.
+     * <p>
+     * Either using: a selection tool, the table or a straight call to setSelection
+     */
+    SelectionListener selectionRefresh = new SelectionListener() {
+        public void selectionChanged() {
+            // Explicit this reference is a good programming practice
+            MapComponentImpl.this.repaint();
+        }
+    };
+    /**
+     * This is a listener used to watch the FaceDAO in order to notice if the data
+     * is edited (either by and edit tool or by the table).
+     */
+    PropertyChangeListener dataChangeListener = new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+            
+        }
+    };
+    
     MapComponentImpl() throws IOException {
         super();
         this.repo = new DefaultRepository();
@@ -81,6 +116,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         this.faceStore = new FaceDataStore(this.faces);
         this.selectedFaces = new FaceDAO(new ArrayList<FaceImpl>(0));
         this.selectedStore = new FaceDataStore(this.selectedFaces);
+        this.addMapSelectionListener( selectionRefresh );
     }
 
     @Override
@@ -128,10 +164,26 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     public void setSelection(List<FaceImpl> faces) {
         try {
             this.selectedFaces = new FaceDAO(faces);
+            fireMapSelection();
         } catch (IOException ex) {
             System.err.println("Error accepting faces.");
             ex.printStackTrace(System.err);
             this.selectedFaces = null;
+        }
+    }
+    
+    /**
+     * This is a really simple event notification.
+     */
+    protected void fireMapSelection(){
+        for( SelectionListener listener : listenerList.getListeners(SelectionListener.class)){
+            try {
+                listener.selectionChanged(); // ping!!
+            }
+            catch( Throwable t ){
+                System.err.println("Listener "+listener+" was unable to process map selection notification:"+t);
+                t.printStackTrace( System.err );
+            }
         }
     }
 
