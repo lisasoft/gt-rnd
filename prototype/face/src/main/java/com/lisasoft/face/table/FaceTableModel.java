@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import com.lisasoft.face.data.FaceImpl;
 
@@ -14,7 +17,20 @@ public class FaceTableModel extends AbstractTableModel {
 	/** serialVersionUID */
     private static final long serialVersionUID = 3514815125584103L;
 	
-    private FaceImpl schema;
+    String[] columnNames = {"Nummer",
+            "Typ",
+            "Flächenart",
+            "PF",
+            "Status",
+            "montiert am",
+            "Aushang-Periodizität",
+            "Gebiet",
+            "Strasse",
+            "Haus-Nr.",
+            "West-Ost",
+            "Süd-Nord",
+            "Drehwinkel",
+            "category"};
     
     List<Object[]> cache = new ArrayList<Object[]>();
 	
@@ -96,6 +112,11 @@ public class FaceTableModel extends AbstractTableModel {
     public FaceTableModel(List<FaceImpl> faces){
     	this.load = new TableWorker(faces);
         load.execute();
+        DefaultTableColumnModel columns = new DefaultTableColumnModel();
+        
+        
+
+        //columns.addColumn(arg0);
         //this.schema = faces.getSchema();
     }
 
@@ -109,7 +130,11 @@ public class FaceTableModel extends AbstractTableModel {
             return 1;
         }
         //return schema.getAttributeCount()+1;
-        return 13;
+        return columnNames.length;
+    }
+    
+    public String getColumnName(int col) {
+        return columnNames[col];
     }
 
     /**

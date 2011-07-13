@@ -46,7 +46,7 @@ public class FaceTable extends JTable {
             
             this.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             this.setPreferredScrollableViewportSize(new Dimension(800, 100));
-            this.setModel(model);            
+            this.setModel(model);
             
             SelectionListener listener = new SelectionListener(this, map);
             this.getSelectionModel().addListSelectionListener(listener);
