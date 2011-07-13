@@ -78,7 +78,7 @@ public class FacePrototype extends JFrame {
      * Scott: most if not all work here, basically need to implement prototype in here
      */
     public void init(){
-    	
+    	System.out.println("init");
     	// layout the user interface with
         // a) MapComponent (it will laod the MapContent itself)
         // b) FaceTable (it will listen to the MapComponent itself)
@@ -91,19 +91,21 @@ public class FacePrototype extends JFrame {
         
     	MapComponentFactory factory = new MapComponentFactory();
     	map = factory.buildMapComponent(toolBar);
+    	
+    	try {
+    		File csvFile = new File("data/senario.csv");
+    		List<FaceImpl> faces = FaceDAO.load(csvFile);
+    		System.out.println("loadFaces: " + faces.size());
+
+    		//need to see map componenet with this faces data
+    		map.setFaces(faces);
+    	} catch (IOException eek) {
+    		System.out.println("Could not load Faces :"+eek);
+    	}        
+    	
         getContentPane().add(map, BorderLayout.CENTER);
-        
-        
-        //table = new FaceTable(map);
-    }
-    
-    public void loadFaces() throws IOException {
-        File csvFile = new File("data/senario.csv");
-        List<FaceImpl> faces = FaceDAO.load(csvFile);
-
-        //need to see map componenet with this faces data
-        map.setFaces(faces);
-
+    	System.out.println("printy!");
+        table = new FaceTable(map);
     }
     
     /**
@@ -123,14 +125,7 @@ public class FacePrototype extends JFrame {
         // configuration
         app.init();
         
-        // load faces - this simulates interaction with external POJO based application
-        try {
-            app.loadFaces();
-        } catch (IOException eek) {
-            System.out.println("Could not load Faces :"+eek);
-        }
         // display
- 
         // use anonymous WindowListener to clean up ..
         app.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
