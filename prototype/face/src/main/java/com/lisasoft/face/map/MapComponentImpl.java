@@ -56,12 +56,11 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
      * This is a map layer used to display faces provided by setFaces.
      */
     public FeatureLayer faceLayer;
-    
+
     public FaceDataStore faceStore;
 
     /*
-     * The artifacts required for the selection layer; it is responsible for
-     * holding onto a list.
+     * The artifacts required for the selection layer; it is responsible for holding onto a list.
      */
     FaceDAO selectedFaces;
 
@@ -75,7 +74,6 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
      */
     FaceDataStore selectedStore;
 
-    
     /**
      * Repository used to hold on to DataStores.
      */
@@ -87,8 +85,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     Map<String, AbstractGridCoverage2DReader> raster;
 
     /**
-     * Eating our own dog food; this internal listener redraws the map
-     * if the selection changes.
+     * Eating our own dog food; this internal listener redraws the map if the selection changes.
      * <p>
      * Either using: a selection tool, the table or a straight call to setSelection
      */
@@ -98,16 +95,24 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
             MapComponentImpl.this.repaint();
         }
     };
+
     /**
-     * This is a listener used to watch the FaceDAO in order to notice if the data
-     * is edited (either by and edit tool or by the table).
+     * This is a listener used to watch the FaceDAO in order to notice if the data is edited (either
+     * by and edit tool or by the table).
      */
     PropertyChangeListener dataChangeListener = new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
-            
+            FaceImpl face = (FaceImpl) evt.getSource();
+            String property = evt.getPropertyName();
+            if (Face.CATEGORY.equals(property) || Face.CATEGORY.equals(property)
+                    || Face.CATEGORY.equals(property)) {
+                MapComponentImpl.this.repaint();
+                // if we had seperate layers we could check if face was in the selected
+                // set and just redraw what was needed.
+            }
         }
     };
-    
+
     MapComponentImpl() throws IOException {
         super();
         this.repo = new DefaultRepository();
@@ -116,7 +121,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         this.faceStore = new FaceDataStore(this.faces);
         this.selectedFaces = new FaceDAO(new ArrayList<FaceImpl>(0));
         this.selectedStore = new FaceDataStore(this.selectedFaces);
-        this.addMapSelectionListener( selectionRefresh );
+        this.addMapSelectionListener(selectionRefresh);
     }
 
     @Override
@@ -171,18 +176,18 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
             this.selectedFaces = null;
         }
     }
-    
+
     /**
      * This is a really simple event notification.
      */
-    protected void fireMapSelection(){
-        for( SelectionListener listener : listenerList.getListeners(SelectionListener.class)){
+    protected void fireMapSelection() {
+        for (SelectionListener listener : listenerList.getListeners(SelectionListener.class)) {
             try {
                 listener.selectionChanged(); // ping!!
-            }
-            catch( Throwable t ){
-                System.err.println("Listener "+listener+" was unable to process map selection notification:"+t);
-                t.printStackTrace( System.err );
+            } catch (Throwable t) {
+                System.err.println("Listener " + listener
+                        + " was unable to process map selection notification:" + t);
+                t.printStackTrace(System.err);
             }
         }
     }

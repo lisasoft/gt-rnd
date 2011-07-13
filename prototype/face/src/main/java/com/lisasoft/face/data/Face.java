@@ -20,6 +20,12 @@ import java.beans.PropertyChangeListener;
  */
 public interface Face {
 
+    public static final String CATEGORY = "category";
+
+    public static final String SUED_NORD_KOORDINATE = "suedNordKoordinate";
+
+    public static final String WEST_OST_KOORDINATE = "westOstKoordinate";
+
     /**
      * @return a Number, which identifies the face and is displayed? in the Gis Component
      */

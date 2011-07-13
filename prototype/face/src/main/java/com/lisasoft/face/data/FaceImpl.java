@@ -31,11 +31,6 @@ import com.vividsolutions.jts.geom.Point;
  * @author Jody Garnett (LISAsoft)
  */
 public class FaceImpl implements Face {
-    private static final String CATEGORY = "category";
-
-    private static final String SUED_NORD_KOORDINATE = "suedNordKoordinate";
-
-    private static final String WEST_OST_KOORDINATE = "westOstKoordinate";
 
     static GeometryFactory gf = JTSFactoryFinder.getGeometryFactory(null);
 
