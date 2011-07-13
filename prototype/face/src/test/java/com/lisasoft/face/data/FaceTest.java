@@ -22,7 +22,7 @@ public class FaceTest extends TestCase {
 
     public void testDAO() throws Exception {
         File csvFile = new File("./data/senario.csv");
-        List<Face> list = FaceDAO.load(csvFile);
+        List<FaceImpl> list = FaceDAO.load(csvFile);
         assertTrue( "Loaded", list.size() > 0 );
         
         Face face = list.get(0);

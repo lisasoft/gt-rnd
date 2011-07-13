@@ -23,9 +23,11 @@ import java.util.Map;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultRepository;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContext;
 import org.geotools.swing.JMapPane;
 
+import com.lisasoft.face.SelectedStyleFactory;
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
 import com.lisasoft.face.data.FaceImpl;
@@ -44,6 +46,8 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     private static final long serialVersionUID = 152022981506025080L;
     FaceDAO faces;
     FaceDAO selectedFaces;
+    FeatureLayer faceLayer;
+    FeatureLayer selectedLayer;
     
     /**
      * Repository used to hold on to DataStores.
@@ -59,8 +63,18 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     	super();
     	this.repo = new DefaultRepository();
     	this.raster = new HashMap<String, AbstractGridCoverage2DReader>();
-    	this.faces = null;
-    	this.selectedFaces = null;
+//    	this.faces = new FaceDAO(new ArrayList<FaceImpl>(0));
+//    	this.selectedFaces = new FaceDAO(new ArrayList<FaceImpl>(0));
+//    	faceLayer = new FeatureLayer(
+//    			featureSource, 
+//    			SelectedStyleFactory.createFaceStyle(), 
+//    			"Faces");
+//    	this.getMapContext(faceLayer);
+//    	selectedLayer = new FeatureLayer(
+//    			featureSource,
+//    			SelectedStyleFactory.createExcludeStyle(),
+//    			"Selected Faces");
+//    	this.getMapContext(selectedLayer);
     }
 
     
