@@ -4,16 +4,23 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JFrame;
-import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import org.geotools.data.DataStore;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.styling.Style;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.filter.identity.FeatureId;
 
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
 import com.lisasoft.face.map.MapComponent;
+import com.lisasoft.face.map.MapComponentFactory;
 import com.lisasoft.face.map.MapComponentImpl;
 import com.lisasoft.face.table.FaceTable;
 
@@ -68,15 +75,21 @@ public class FacePrototype extends JFrame {
      * Scott: most if not all work here, basically need to implement prototype in here
      */
     public void init(){
-        // layout the user interface with
+    	
+    	// layout the user interface with
         // a) MapComponent (it will laod the MapContent itself)
         // b) FaceTable (it will listen to the MapComponent itself)
         // c) toolbar (will need to add actions? on the MapContent - perhaps pass int a toolbar?)
+    	
+    	MapComponentFactory factory = new MapComponentFactory();
+    	map = factory.buildMapComponent();
+    	
+        //table = new FaceTable(map);
     }
     
     public void loadFaces() throws IOException {
-        File csvFile = null;
-        List<Face> faces = FaceDAO.load( csvFile );
+        File csvFile = new File("data/senario.csv");
+        List<Face> faces = FaceDAO.load(csvFile);
 
         //need to see map componenet with this faces data
         map.setFaces(faces);
@@ -137,4 +150,5 @@ public class FacePrototype extends JFrame {
         // even though this is the "end" of the main method the Swing thread was created
         // by setVisible above and will hold the application open (strange design really)
     }
+    
 }
