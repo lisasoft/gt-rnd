@@ -45,55 +45,58 @@ import com.vividsolutions.jts.geom.Point;
  * @author Jody Garnett (LISAsoft)
  */
 public class FaceDAO {
-    
+
     /**
      * Change this to match the EPSG code for your spatial reference system.
      * 
      * See: http://spatialreference.org/ref/?search=ch1903
      */
     public static String EPSG_CODE = "EPSG:2056";
-    
+
     static GeometryFactory gf = JTSFactoryFinder.getGeometryFactory(null);
 
     /**
-     * This represents the contents - use CopyOnWriteArrayList to
-     * account for concurrent access
+     * This represents the contents - use CopyOnWriteArrayList to account for concurrent access
      */
     private CopyOnWriteArrayList<FaceImpl> contents;
 
     public FaceDAO(List<FaceImpl> faceList) throws IOException {
-        contents = new CopyOnWriteArrayList<FaceImpl>( faceList );
+        contents = new CopyOnWriteArrayList<FaceImpl>(faceList);
     }
-    
+
     public FaceDAO(File csvFile) throws IOException {
-        contents = new CopyOnWriteArrayList<FaceImpl>( load(csvFile) );
+        contents = new CopyOnWriteArrayList<FaceImpl>(load(csvFile));
     }
-    
-    static     Point getLocation(Face face ) {
+
+    static Point getLocation(Face face) {
         double x = face.getWestOstKoordinate().doubleValue();
         double y = face.getSuedNordKoordinate().doubleValue();
         Coordinate coordinate = new Coordinate(x, y);
         return gf.createPoint(coordinate);
     }
+
     /** Thread-safe access to the data objects */
     public CopyOnWriteArrayList<FaceImpl> contents() {
         return contents;
     }
+
     /**
-     * Used to access the bean info; this information is used to dynamically
-     * generate the FeatureType and Features.
+     * Used to access the bean info; this information is used to dynamically generate the
+     * FeatureType and Features.
+     * 
      * @return bean info for Face interface
      */
-    public BeanInfo getBeanInfo(){
+    public BeanInfo getBeanInfo() {
         BeanInfo info;
         try {
-            info = Introspector.getBeanInfo( Face.class );
+            info = Introspector.getBeanInfo(Face.class);
         } catch (IntrospectionException e) {
             return null;
         }
         return info;
-        
+
     }
+
     /**
      * Used to read in from a CSV file; created as a static method for ease of testing.
      * 
@@ -119,47 +122,28 @@ public class FaceDAO {
 
             // Nummer
             // int identifier = Integer.parseInt(tokens[0].trim());
-            long identifier = Long.parseLong(reader.get("Nummer"));
+            long identifier = Long.parseLong(reader.get(0));
             FaceImpl face = new FaceImpl(identifier);
+            
+            face.setType(reader.get(1));
+            
+            face.setFaceFormat(reader.get(2));            
+            face.setProductFormat(reader.get(2));
+            face.setStatus(reader.get(4));
+            face.setInstalled(reader.get(5));
+            face.setPeriod(reader.get(6));
 
-            // String type = tokens[1].trim();
-            face.setType(reader.get("Typ"));
-
-            // String faceFormat = tokens[2].trim();
-            face.setFaceFormat(reader.get(3));
-
-            // String productFormat = tokens[3].trim();
-            face.setProductFormat(reader.get(4));
-
-            // String status = tokens[4].trim();
-            face.setStatus(reader.get(5));
-
-            // String installed = tokens[5].trim();
-            face.setInstalled(reader.get(6));
-
-            // String posting = tokens[6].trim();
             face.setPosting(reader.get(7));
-
-            // String area = tokens[7].trim();
             face.setArea(reader.get(8));
-
-            // String street = tokens[8].trim();
             face.setStreet(reader.get(9));
-
-            // String number = tokens[9].trim();
             face.setNumber(reader.get(10));
 
             double x = Double.parseDouble(reader.get(11));
             face.setWestOstKoordinate(new BigDecimal(x));
 
-            // double longitude = Double.parseDouble(tokens[11]);
             double y = Double.parseDouble(reader.get(12));
             face.setSuedNordKoordinate(new BigDecimal(y));
-
-            // String angle = tokens[12].trim();
             face.setAngle(reader.get(13));
-
-            // String category = tokens[13].trim();
             face.setCategory(reader.get(14));
 
             faceList.add(face);

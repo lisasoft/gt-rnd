@@ -44,6 +44,9 @@ public class FaceImpl implements Face {
 
     String posting; // = tokens[6].trim();
 
+    String period;
+
+
     String area; // = tokens[7].trim();
 
     String street; // = tokens[8].trim();
@@ -58,10 +61,10 @@ public class FaceImpl implements Face {
 
     String category; // = tokens[13].trim();
 
-    public FaceImpl( long identifier ) {
+    public FaceImpl(long identifier) {
         this.identifier = identifier;
     }
-    
+
     /**
      * Point uses a Coordinate of double for display; this may notbe sufficient given the use of
      * BigDecimal (is this a CRS measured in cm ??)
@@ -119,6 +122,15 @@ public class FaceImpl implements Face {
         this.posting = posting;
     }
 
+
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
+    
     public String getArea() {
         return area;
     }
@@ -162,7 +174,7 @@ public class FaceImpl implements Face {
     public Long getNummer() {
         return identifier;
     }
-    
+
     public BigDecimal getWestOstKoordinate() {
         return x;
     }
