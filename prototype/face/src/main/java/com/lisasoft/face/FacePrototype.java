@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFrame;
+import javax.swing.JToolBar;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -83,10 +84,15 @@ public class FacePrototype extends JFrame {
         // c) toolbar (will need to add actions? on the MapContent - perhaps pass int a toolbar?)
     	
         getContentPane().setLayout(new BorderLayout());	
+        
+        JToolBar toolBar = new JToolBar();
+        getContentPane().add(toolBar, BorderLayout.NORTH);
+        
     	MapComponentFactory factory = new MapComponentFactory();
-    	map = factory.buildMapComponent();
+    	map = factory.buildMapComponent(toolBar);
         getContentPane().add(map, BorderLayout.CENTER);
-    	System.out.println("printy!");
+        
+        
         //table = new FaceTable(map);
     }
     

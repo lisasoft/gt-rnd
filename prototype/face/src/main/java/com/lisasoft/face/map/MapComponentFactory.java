@@ -94,8 +94,30 @@ public class MapComponentFactory {
 		return component;
 	}
 	
-	public MapComponentImpl<Face> buildMapComponent(JToolBar toolbar) {
+	public MapComponentImpl<Face> buildMapComponent(JToolBar toolBar) {
 		MapComponentImpl<Face> component = buildMapComponent();
+		
+        toolBar.setOrientation(JToolBar.HORIZONTAL);
+        toolBar.setFloatable(false);
+
+        JButton zoomInBtn = new JButton(new ZoomInAction(component));
+        toolBar.add(zoomInBtn);
+
+        JButton zoomOutBtn = new JButton(new ZoomOutAction(component));
+        toolBar.add(zoomOutBtn);
+        
+        JButton panBtn = new JButton(new PanAction(component));
+        toolBar.add(panBtn);
+        
+        JButton infoBtn = new JButton(new InfoAction(component));
+        toolBar.add(infoBtn);
+        
+        JButton selectButton = new JButton("Select");
+        toolBar.add(selectButton);
+        
+//        selectButton.addActionListener(new MapSelectionTool(component));
+
+        toolBar.setSize(800, 100);
 		
 		return component;
 	}
