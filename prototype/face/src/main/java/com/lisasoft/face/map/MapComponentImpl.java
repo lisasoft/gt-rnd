@@ -23,6 +23,7 @@ import java.util.Map;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultRepository;
+import org.geotools.data.FeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContext;
 import org.geotools.swing.JMapPane;
@@ -30,6 +31,7 @@ import org.geotools.swing.JMapPane;
 import com.lisasoft.face.SelectedStyleFactory;
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
+import com.lisasoft.face.data.FaceDataStore;
 import com.lisasoft.face.data.FaceImpl;
 
 /**
@@ -44,10 +46,18 @@ import com.lisasoft.face.data.FaceImpl;
 public class MapComponentImpl extends JMapPane implements MapComponent {
 	
     private static final long serialVersionUID = 152022981506025080L;
+    /*
+     * The artifacts required for the face layer.
+     */
     FaceDAO faces;
+    public FeatureLayer faceLayer;
+    public FaceDataStore faceStore;
+    /*
+     * The artifacts required for the selection layer.
+     */
     FaceDAO selectedFaces;
-    FeatureLayer faceLayer;
     FeatureLayer selectedLayer;
+    FaceDataStore selectedStore;
     
     /**
      * Repository used to hold on to DataStores.
@@ -59,22 +69,35 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
      */
     Map<String, AbstractGridCoverage2DReader> raster;
     
-    MapComponentImpl() {
+    MapComponentImpl() throws IOException {
     	super();
     	this.repo = new DefaultRepository();
     	this.raster = new HashMap<String, AbstractGridCoverage2DReader>();
-//    	this.faces = new FaceDAO(new ArrayList<FaceImpl>(0));
-//    	this.selectedFaces = new FaceDAO(new ArrayList<FaceImpl>(0));
-//    	faceLayer = new FeatureLayer(
-//    			featureSource, 
-//    			SelectedStyleFactory.createFaceStyle(), 
-//    			"Faces");
-//    	this.getMapContext(faceLayer);
-//    	selectedLayer = new FeatureLayer(
-//    			featureSource,
-//    			SelectedStyleFactory.createExcludeStyle(),
-//    			"Selected Faces");
-//    	this.getMapContext(selectedLayer);
+    	this.faces = new FaceDAO(new ArrayList<FaceImpl>(0));
+    	this.faceStore = new FaceDataStore(this.faces);
+    	this.selectedFaces = new FaceDAO(new ArrayList<FaceImpl>(0));
+    	this.selectedStore = new FaceDataStore(this.selectedFaces);
+    }
+    
+    @Override
+    public void setMapContext(MapContext context) {
+    	super.setMapContext(context);
+    	/*
+    	 * For the moment, let's ignore this.
+    	try {
+    		faceLayer = new FeatureLayer(
+    				this.faceStore.getFeatureSource(this.faceStore.getTypeNames()[0]), 
+    				SelectedStyleFactory.createSimpleFaceStyle());
+    		this.getMapContext().addLayer(faceLayer);
+    		selectedLayer = new FeatureLayer(
+    				this.selectedStore.getFeatureSource(this.faceStore.getTypeNames()[0]),
+    				SelectedStyleFactory.createExcludeStyle());
+    		this.getMapContext().addLayer(selectedLayer);
+    	} catch(IOException ex) {
+    		System.err.println("Failure to create the expected face layers.");
+    		ex.printStackTrace(System.err);
+    	}
+    	*/
     }
 
     
@@ -112,7 +135,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     		this.selectedFaces = null;
     	}
     }
-
+    
     public void addMapSelectionListener(SelectionListener listener) {
         listenerList.add(SelectionListener.class, listener );
     }

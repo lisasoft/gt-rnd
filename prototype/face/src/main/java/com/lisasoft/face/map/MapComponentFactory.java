@@ -71,7 +71,7 @@ public class MapComponentFactory {
     public MapComponentFactory() {
 	}
     
-	public MapComponentImpl buildMapComponent() {
+	public MapComponentImpl buildMapComponent() throws IOException {
 		MapComponentImpl component = new MapComponentImpl();
 		loadShapefileData(component.repo);
 		loadRaster(component.raster);
@@ -83,7 +83,8 @@ public class MapComponentFactory {
 		return component;
 	}
 	
-	public MapComponentImpl buildMapComponent(JToolBar toolBar) {
+	public MapComponentImpl buildMapComponent(JToolBar toolBar) 
+			throws IOException {
 		MapComponentImpl component = buildMapComponent();
 		
         toolBar.setOrientation(JToolBar.HORIZONTAL);
