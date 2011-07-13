@@ -7,14 +7,14 @@ import java.util.List;
 import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 
-import org.opengis.feature.simple.SimpleFeatureType;
-
-import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceImpl;
 
 public class FaceTableModel extends AbstractTableModel {
 	
-    private SimpleFeatureType schema;
+	/** serialVersionUID */
+    private static final long serialVersionUID = 3514815125584103L;
+	
+    private FaceImpl schema;
     
     List<Object[]> cache = new ArrayList<Object[]>();
 	
@@ -46,39 +46,26 @@ public class FaceTableModel extends AbstractTableModel {
         	System.out.println("in doInBackground");
             List<Object[]> list = new ArrayList<Object[]>();
             
-            /*try {
-                features.accepts( new FeatureVisitor() {                
-                    public void visit(Feature feature) {
-                        SimpleFeature simple = (SimpleFeature) feature;
-                        Object[] values = simple.getAttributes().toArray();
-                        ArrayList<Object> row = new ArrayList<Object>( Arrays.asList( values ));
-                        row.add(0, simple.getID() );
-                        publish( row.toArray() );
-                        
-                        if( isCancelled() ) listener.setCanceled(true);
-                    }
-                } , listener );
-            } catch (IOException e) {
-                exception = e;
-            }           */
-            
             for(FaceImpl face : faces){
             	
             	System.out.println(face.getNummer());
             	ArrayList<Object> row = new ArrayList<Object>();
                 row.add(face.getNummer());
-                row.add(face.getSuedNordKoordinate());
+                row.add(face.getType());
+                row.add(face.getFaceFormat());
+                row.add(face.getProductFormat());
+                row.add(face.getStatus());
+                row.add(face.getInstalled());
+                row.add(face.getPosting());
+                row.add(face.getArea());
+                row.add(face.getStreet());
+                row.add(face.getNumber());
                 row.add(face.getWestOstKoordinate());
+                row.add(face.getSuedNordKoordinate());
                 row.add(face.getAngle());
-                publish( row.toArray() );
+                row.add(face.getCategory());
                 
-            	/*
-            	//SimpleFeature simple = (SimpleFeature) feature;
-                Object[] values = face.getAttributes().toArray();
-                ArrayList<Object> row = new ArrayList<Object>( Arrays.asList( values ));
-                row.add(0, simple.getID() );
                 publish( row.toArray() );
-                */
             }
             
             return list;
@@ -109,7 +96,7 @@ public class FaceTableModel extends AbstractTableModel {
     public FaceTableModel(List<FaceImpl> faces){
     	this.load = new TableWorker(faces);
         load.execute();
-        //this.schema = features.getSchema();
+        //this.schema = faces.getSchema();
     }
 
     /**
@@ -122,7 +109,7 @@ public class FaceTableModel extends AbstractTableModel {
             return 1;
         }
         //return schema.getAttributeCount()+1;
-        return 1;
+        return 13;
     }
 
     /**
