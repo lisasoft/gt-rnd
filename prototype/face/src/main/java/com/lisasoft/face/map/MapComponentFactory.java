@@ -80,13 +80,19 @@ public class MapComponentFactory {
         raster = new LinkedHashMap<String, AbstractGridCoverage2DReader>();
 	}
     
-	public MapComponentImpl buildMapComponent() {
+	public MapComponentImpl<Face> buildMapComponent() {
 		loadShapefileData();
 		loadRaster();
 //		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
 		
 		MapComponentImpl<Face> component = new MapComponentImpl<Face>();
 		initUserInterface(map, component);
+		
+		return component;
+	}
+	
+	public MapComponentImpl<Face> buildMapComponent(JToolBar toolbar) {
+		MapComponentImpl<Face> component = buildMapComponent();
 		
 		return component;
 	}
