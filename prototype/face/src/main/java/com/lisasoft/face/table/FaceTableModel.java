@@ -11,13 +11,15 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import com.lisasoft.face.data.FaceImpl;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 
 public class FaceTableModel extends AbstractTableModel {
 	
 	/** serialVersionUID */
     private static final long serialVersionUID = 3514815125584103L;
 	
-    String[] columnNames = {"Nummer",
+    /*String[] columnNames = {"Nummer",
             "Typ",
             "Flächenart",
             "PF",
@@ -30,7 +32,22 @@ public class FaceTableModel extends AbstractTableModel {
             "West-Ost",
             "Süd-Nord",
             "Drehwinkel",
-            "category"};
+            "category"};*/
+    
+    String[] columnNames = {"Identifier",
+            "Type",
+            "Face Format",
+            "Product Face Format",
+            "Status",
+            "Installed on",
+            "Posting Period",
+            "Area",
+            "Street",
+            "House Number",
+            "West-Ost",
+            "Süd-Nord",
+            "Angle",
+            "Category"};
     
     List<Object[]> cache = new ArrayList<Object[]>();
 	
@@ -76,6 +93,9 @@ public class FaceTableModel extends AbstractTableModel {
                 row.add(face.getArea());
                 row.add(face.getStreet());
                 row.add(face.getNumber());
+                
+                //Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+                
                 row.add(face.getWestOstKoordinate());
                 row.add(face.getSuedNordKoordinate());
                 row.add(face.getAngle());
