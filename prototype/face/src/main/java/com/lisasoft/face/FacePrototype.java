@@ -95,6 +95,7 @@ public class FacePrototype extends JFrame {
     	
     	System.out.println("printy!");
     	table = new FaceTable(map);
+    	System.out.println("RowCount: " + table.getRowCount());
     	
     	JScrollPane scrollpane = new JScrollPane(table);
     	

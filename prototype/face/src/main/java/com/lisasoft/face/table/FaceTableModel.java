@@ -2,23 +2,17 @@ package com.lisasoft.face.table;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.util.NullProgressListener;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.lisasoft.face.data.Face;
-import com.lisasoft.face.data.FaceRow;
+import com.lisasoft.face.data.FaceImpl;
 
-public class FaceTableModel<T extends Face> extends AbstractTableModel {
+public class FaceTableModel extends AbstractTableModel {
 	
     private SimpleFeatureType schema;
     
@@ -31,15 +25,15 @@ public class FaceTableModel<T extends Face> extends AbstractTableModel {
      * them into the {@code TableModel}. The work is performed on a
      * background thread.
      */
-    class TableWorker<T extends Face> extends SwingWorker<List<Object[]>, Object[]> {
-        List<T> faces;
+    class TableWorker extends SwingWorker<List<Object[]>, Object[]> {
+        List<FaceImpl> faces;
 
         /**
          * Constructor
          *
          * @param features the feature collection to be loaded into the table
          */
-        TableWorker( List<T> faces ) { 
+        TableWorker(List<FaceImpl> faces ) { 
             this.faces = faces;  
             System.out.println("in table worker constructor");
         }
@@ -68,15 +62,16 @@ public class FaceTableModel<T extends Face> extends AbstractTableModel {
                 exception = e;
             }           */
             
-            for(Face face : faces){
+            for(FaceImpl face : faces){
             	
-            	System.out.println(face.toString());
+            	System.out.println(face.getNummer());
             	ArrayList<Object> row = new ArrayList<Object>();
                 row.add(face.getNummer());
                 row.add(face.getSuedNordKoordinate());
                 row.add(face.getWestOstKoordinate());
                 row.add(face.getAngle());
                 publish( row.toArray() );
+                
             	/*
             	//SimpleFeature simple = (SimpleFeature) feature;
                 Object[] values = face.getAttributes().toArray();
@@ -99,6 +94,7 @@ public class FaceTableModel<T extends Face> extends AbstractTableModel {
             int from = cache.size();
             cache.addAll( chunks );
             int to = cache.size();
+            System.out.println("Processing: " + from + " to " + to);
             fireTableRowsInserted( from, to );
         }        
     }
@@ -110,7 +106,7 @@ public class FaceTableModel<T extends Face> extends AbstractTableModel {
      *
      * @param features the feature collection to load into the table
      */
-    public FaceTableModel(List<T> faces){
+    public FaceTableModel(List<FaceImpl> faces){
     	this.load = new TableWorker(faces);
         load.execute();
         //this.schema = features.getSchema();
@@ -126,7 +122,7 @@ public class FaceTableModel<T extends Face> extends AbstractTableModel {
             return 1;
         }
         //return schema.getAttributeCount()+1;
-        return 0;
+        return 1;
     }
 
     /**
