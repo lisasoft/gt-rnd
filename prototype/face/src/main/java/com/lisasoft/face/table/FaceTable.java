@@ -1,7 +1,13 @@
 package com.lisasoft.face.table;
 
-import javax.swing.JTable;
+import java.awt.Dimension;
 
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+
+import org.geotools.swing.table.FeatureCollectionTableModel;
+
+import com.lisasoft.face.Listeners.SelectionListener;
 import com.lisasoft.face.map.MapComponentImpl;
 
 /**
@@ -32,6 +38,20 @@ public class FaceTable extends JTable {
      */
     private void initi() {
         // SH: Please configure table here; you can inner classed or break out seperate classes
-    }
+    	
+    	if (map.getFaces() != null) {
+            //FeatureCollectionTableModel model = new FeatureCollectionTableModel(map.getFaces());
+            
+            this.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            this.setPreferredScrollableViewportSize(new Dimension(800, 100));
+            //this.setModel(model);            
+            
+            /*SelectionListener listener = new SelectionListener(this, map);
+            this.getSelectionModel().addListSelectionListener(listener);
+            this.getColumnModel().getSelectionModel()
+                .addListSelectionListener(listener);          
+            */
+        }
+    }  
     
 }

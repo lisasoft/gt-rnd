@@ -84,7 +84,7 @@ public class FacePrototype extends JFrame {
     	MapComponentFactory factory = new MapComponentFactory();
     	map = factory.buildMapComponent();
     	
-        //table = new FaceTable(map);
+        table = new FaceTable(map);
     }
     
     public void loadFaces() throws IOException {
