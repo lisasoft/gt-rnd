@@ -41,9 +41,8 @@ public class MapComponentImpl<T extends Face> extends JMapPane implements MapCom
     List<T> faceList;
     List<T> selectedList;
     
-    MapComponentImpl(JMapPane mapPane) {
-    	this.mapPane = mapPane;
-    	this.map = mapPane.getMapContext();
+    MapComponentImpl() {
+    	super();
     	this.faceList = new ArrayList<T>();
     	this.selectedList = new ArrayList<T>();
     }

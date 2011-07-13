@@ -84,7 +84,7 @@ public class MapComponentFactory {
 		loadRaster();
 		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
 		
-		MapComponentImpl component = new MapComponentImpl(mapPane);
+		MapComponentImpl component = new MapComponentImpl();
 		initUserInterface(mapPane, map, component);
 		
 		return component;
