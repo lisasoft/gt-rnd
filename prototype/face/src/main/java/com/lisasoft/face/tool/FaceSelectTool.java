@@ -25,6 +25,12 @@ import org.opengis.filter.identity.FeatureId;
 
 import com.lisasoft.face.SelectedStyleFactory;
 
+/**
+ * 
+ * @author mleslie
+ * @deprecated The new tool, MapSelectionTool, has been rewritten to work 
+ *             with MapComponentImpl
+ */
 public class FaceSelectTool extends CursorTool implements ActionListener {
 	
 	JMapPane mapPane;

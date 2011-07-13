@@ -13,6 +13,7 @@
  */
 package com.lisasoft.face.map;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +26,8 @@ import org.geotools.map.MapContext;
 import org.geotools.swing.JMapPane;
 
 import com.lisasoft.face.data.Face;
+import com.lisasoft.face.data.FaceDAO;
+import com.lisasoft.face.data.FaceImpl;
 
 /**
  * This is a quick implementaion of MapComponent using an internal JMapPane for the display
@@ -35,47 +38,62 @@ import com.lisasoft.face.data.Face;
  * 
  * @author Jody Garnett (LISAsoft)
  */
-public class MapComponentImpl<T extends Face> extends JMapPane implements MapComponent {
+public class MapComponentImpl extends JMapPane implements MapComponent {
+	
     private static final long serialVersionUID = 152022981506025080L;
-    private MapContext map;
-    List<T> faceList;
-    List<T> selectedList;
+    FaceDAO faces;
+    FaceDAO selectedFaces;
     
-    MapComponentImpl() {
-    	super();
-    	this.faceList = new ArrayList<T>();
-    	this.selectedList = new ArrayList<T>();
-    }
-
-    /**
-     * TBD
-     */
-    private JMapPane mapPane;
     /**
      * Repository used to hold on to DataStores.
      */
-    private DefaultRepository repo;
+    DefaultRepository repo;
 
-    /** Used to hold on to rasters */
-    private Map<String, AbstractGridCoverage2DReader> raster;
+    /**
+     *  Used to hold on to rasters 
+     */
+    Map<String, AbstractGridCoverage2DReader> raster;
+    
+    MapComponentImpl() {
+    	super();
+    	this.faces = null;
+    	this.selectedFaces = null;
+    }
+
     
     // MAP COMPONENT INTERFACE    
-    public List<T> getFaces() {
-    	return Collections.unmodifiableList(faceList);
+    public List<FaceImpl> getFaces() {
+    	
+    	return (List<FaceImpl>) (faces !=  null ?
+    			faces.contents() :
+    			Collections.emptyList());
     }
     
-    public void setFaces(List faces) {
-    	faceList.clear();
-    	faceList.addAll(faces);
+    public void setFaces(List<FaceImpl> faces) {
+    	try {
+    		this.faces = new FaceDAO(faces);
+    	} catch(IOException ex) {
+    		System.err.println("Error accepting faces.");
+    		ex.printStackTrace(System.err);
+    		this.faces = null;
+    	}
     }
 
-    public List<T> getSelection() {
-    	return Collections.unmodifiableList(selectedList);
+    public List<FaceImpl> getSelection() {
+    	
+    	return (List<FaceImpl>) (selectedFaces !=  null ?
+    			selectedFaces.contents() :
+    			Collections.emptyList());
     }
-
-    public void setSelection(List faces) {
-    	selectedList.clear();
-    	selectedList.addAll(faces);
+    
+    public void setSelection(List<FaceImpl> faces) {
+    	try {
+    		this.selectedFaces = new FaceDAO(faces);
+    	} catch(IOException ex) {
+    		System.err.println("Error accepting faces.");
+    		ex.printStackTrace(System.err);
+    		this.selectedFaces = null;
+    	}
     }
 
     public void addMapSelectionListener(SelectionListener listener) {

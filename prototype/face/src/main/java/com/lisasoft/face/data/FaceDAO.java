@@ -59,14 +59,14 @@ public class FaceDAO {
      * This represents the contents - use CopyOnWriteArrayList to
      * account for concurrent access
      */
-    private CopyOnWriteArrayList<Face> contents;
+    private CopyOnWriteArrayList<FaceImpl> contents;
 
-    public FaceDAO(File csvFile) throws IOException {
-        contents = new CopyOnWriteArrayList<Face>( load(csvFile) );
+    public FaceDAO(List<FaceImpl> faceList) throws IOException {
+        contents = new CopyOnWriteArrayList<FaceImpl>( faceList );
     }
     
-    public FaceDAO(List<FaceImpl> faceList) throws IOException {
-        contents = new CopyOnWriteArrayList<Face>( faceList );
+    public FaceDAO(File csvFile) throws IOException {
+        contents = new CopyOnWriteArrayList<FaceImpl>( load(csvFile) );
     }
     
     static     Point getLocation(Face face ) {
@@ -76,7 +76,7 @@ public class FaceDAO {
         return gf.createPoint(coordinate);
     }
     /** Thread-safe access to the data objects */
-    public CopyOnWriteArrayList<Face> contents() {
+    public CopyOnWriteArrayList<FaceImpl> contents() {
         return contents;
     }
     /**
@@ -101,13 +101,13 @@ public class FaceDAO {
      * @return
      * @throws FileNotFoundException
      */
-    public static List<Face> load(File csvFile) throws IOException {
+    public static List<FaceImpl> load(File csvFile) throws IOException {
         CsvReader reader = new CsvReader(new FileReader(csvFile));
         boolean header = reader.readHeaders();
         if (!header) {
             throw new IOException("Unable to read csv header");
         }
-        List<Face> faceList = new ArrayList<Face>();
+        List<FaceImpl> faceList = new ArrayList<FaceImpl>();
 
         while (reader.readRecord()) {
             // we have content let us make a Face

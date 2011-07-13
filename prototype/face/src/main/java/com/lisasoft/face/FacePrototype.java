@@ -21,6 +21,7 @@ import org.opengis.filter.identity.FeatureId;
 
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
+import com.lisasoft.face.data.FaceImpl;
 import com.lisasoft.face.map.MapComponent;
 import com.lisasoft.face.map.MapComponentFactory;
 import com.lisasoft.face.map.MapComponentImpl;
@@ -98,7 +99,7 @@ public class FacePrototype extends JFrame {
     
     public void loadFaces() throws IOException {
         File csvFile = new File("data/senario.csv");
-        List<Face> faces = FaceDAO.load(csvFile);
+        List<FaceImpl> faces = FaceDAO.load(csvFile);
 
         //need to see map componenet with this faces data
         map.setFaces(faces);
