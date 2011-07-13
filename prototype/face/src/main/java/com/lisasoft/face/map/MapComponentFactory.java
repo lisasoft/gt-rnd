@@ -60,42 +60,54 @@ import org.opengis.style.ContrastMethod;
 
 import com.lisasoft.face.SelectedStyleFactory;
 import com.lisasoft.face.data.Face;
+import com.lisasoft.face.data.FaceImpl;
 import com.lisasoft.face.table.FaceTable;
 import com.lisasoft.face.tool.FaceSelectTool;
+import com.lisasoft.face.tool.MapSelectionTool;
 
 public class MapComponentFactory {
-    /**
-     * Repository used to hold on to DataStores.
-     */
-    private DefaultRepository repo;
-
-    /** Used to hold on to rasters */
-    private Map<String, AbstractGridCoverage2DReader> raster;
-//    private JMapPane mapPane;
-    
     private File dataRoot = new File(".");
     
     public MapComponentFactory() {
-    	repo = new DefaultRepository();
-        raster = new LinkedHashMap<String, AbstractGridCoverage2DReader>();
 	}
     
-	public MapComponentImpl<Face> buildMapComponent() {
-		loadShapefileData();
-		loadRaster();
-//		JMapPane mapPane = new JMapPane();		MapContext map = createMap(repo, raster);
-		
-		MapComponentImpl<Face> component = new MapComponentImpl<Face>();
+	public MapComponentImpl buildMapComponent() throws IOException {
+		MapComponentImpl component = new MapComponentImpl();
+		loadShapefileData(component.repo);
+		loadRaster(component.raster);
+		MapContext map = createMap(component.repo, component.raster);
         component.setRenderer(new StreamingRenderer());
         component.setMapContext(map);
         component.setSize(800, 500);
-//		initUserInterface(map, component);
 		
 		return component;
 	}
 	
-	public MapComponentImpl<Face> buildMapComponent(JToolBar toolbar) {
-		MapComponentImpl<Face> component = buildMapComponent();
+	public MapComponentImpl buildMapComponent(JToolBar toolBar) 
+			throws IOException {
+		MapComponentImpl component = buildMapComponent();
+		
+        toolBar.setOrientation(JToolBar.HORIZONTAL);
+        toolBar.setFloatable(false);
+
+        JButton zoomInBtn = new JButton(new ZoomInAction(component));
+        toolBar.add(zoomInBtn);
+
+        JButton zoomOutBtn = new JButton(new ZoomOutAction(component));
+        toolBar.add(zoomOutBtn);
+        
+        JButton panBtn = new JButton(new PanAction(component));
+        toolBar.add(panBtn);
+        
+        JButton infoBtn = new JButton(new InfoAction(component));
+        toolBar.add(infoBtn);
+        
+        JButton selectButton = new JButton("Select");
+        toolBar.add(selectButton);
+        
+        selectButton.addActionListener(new MapSelectionTool(component));
+
+        toolBar.setSize(800, 100);
 		
 		return component;
 	}
@@ -106,8 +118,8 @@ public class MapComponentFactory {
      * @param rasterFile the GeoTIFF file
      * @param shpFile the Shapefile
      */
-    private MapContext createMap(DefaultRepository repo2,
-            Map<String, AbstractGridCoverage2DReader> raster2) {
+    private MapContext createMap(DefaultRepository repo,
+            Map<String, AbstractGridCoverage2DReader> raster) {
 
         // Set up a MapContext with the two layers
         final MapContext map = new DefaultMapContext();
@@ -155,7 +167,7 @@ public class MapComponentFactory {
 
     }
     
-    private void loadShapefileData() {
+    private void loadShapefileData(DefaultRepository repo) {
         if (dataRoot.exists() && dataRoot.isDirectory()) {
             // check for shapefiles
             //
@@ -182,7 +194,7 @@ public class MapComponentFactory {
         }
     }
     
-    private void loadRaster() {
+    private void loadRaster(Map<String, AbstractGridCoverage2DReader> raster) {
         if (dataRoot.exists() && dataRoot.isDirectory()) {
             // check for geotiff files
             File[] tiffFiles = dataRoot.listFiles(new FilenameFilter() {
@@ -248,72 +260,4 @@ public class MapComponentFactory {
         }
         return prj;
     }
-    
-    
-    private JMapPane initUserInterface(MapComponentImpl<Face> mapPane) {
-        JToolBar toolBar = null;
-        JTable table = null;
-        
-        JScrollPane scrollPane = new JScrollPane(table);
-
-//        if (component != null) {
-//            table = new FaceTable(component);
-//            table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-//            table.setPreferredScrollableViewportSize(new Dimension(800, 100));
-            
-//            ListSelectionModel listSelectionModel = table.getSelectionModel();
-//            listSelectionModel.addListSelectionListener(new SelectionListener());
-//            table.setSelectionModel(listSelectionModel);
-//        }
-        /*
-         * mapFrame.setSize(800, 600); mapFrame.enableStatusBar(true);
-         * //frame.enableTool(JMapFrame.Tool.ZOOM, JMapFrame.Tool.PAN, JMapFrame.Tool.RESET);
-         * mapFrame.enableToolBar(true);
-         * 
-         * JMenuBar menuBar = new JMenuBar(); mapFrame.setJMenuBar(menuBar); JMenu menu = new
-         * JMenu("Raster"); menuBar.add(menu);
-         * 
-         * menu.add( new SafeAction("Grayscale display") { public void action(ActionEvent e) throws
-         * Throwable { Style style = createGreyscaleStyle(); if (style != null) {
-         * map.getLayer(0).setStyle(style); mapFrame.repaint(); } } });
-         * 
-         * menu.add( new SafeAction("RGB display") { public void action(ActionEvent e) throws
-         * Throwable { Style style = createRGBStyle(); if (style != null) {
-         * map.getLayer(0).setStyle(style); mapFrame.repaint(); } } });
-         */
-
-        // set a renderer to use with the map pane
-
-        // set the map context that contains the layers to be displayed
-
-        toolBar = new JToolBar();
-        toolBar.setOrientation(JToolBar.HORIZONTAL);
-        toolBar.setFloatable(false);
-
-        JButton zoomInBtn = new JButton(new ZoomInAction(mapPane));
-        toolBar.add(zoomInBtn);
-
-        JButton zoomOutBtn = new JButton(new ZoomOutAction(mapPane));
-        toolBar.add(zoomOutBtn);
-        
-        JButton panBtn = new JButton(new PanAction(mapPane));
-        toolBar.add(panBtn);
-        
-        JButton infoBtn = new JButton(new InfoAction(mapPane));
-        toolBar.add(infoBtn);
-        
-        JButton selectButton = new JButton("Select");
-        toolBar.add(selectButton);
-        
-//        selectButton.addActionListener(new FaceSelectTool(mapPane, faces, selectedFaceLayer));
-
-        toolBar.setSize(800, 100);
-
-//        parent.getContentPane().add(toolBar, BorderLayout.NORTH);
-//        parent.getContentPane().add(mapPane, BorderLayout.CENTER);
-//        parent.getContentPane().add(scrollPane, BorderLayout.SOUTH);
-        // mapFrame.setVisible(true);
-        return mapPane;
-    }
-
 }

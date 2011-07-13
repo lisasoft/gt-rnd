@@ -1,6 +1,9 @@
 package com.lisasoft.face;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Set;
 
@@ -16,6 +19,7 @@ import org.geotools.styling.Mark;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
+import org.geotools.styling.SLDParser;
 import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
@@ -161,7 +165,7 @@ public class SelectedStyleFactory {
     	return basicStyle;
     }
     
-    public static Filter createBboxFilter(Name geometryDescriptor, ReferencedEnvelope filterBox) {
+    public static Filter createBboxFilter(String geometryDescriptor, ReferencedEnvelope filterBox) {
     	return ff.intersects(ff.property(geometryDescriptor), ff.literal(filterBox));
     }
     
@@ -250,4 +254,30 @@ public class SelectedStyleFactory {
 
         return SLD.wrapSymbolizers(sym);
     }
+    
+    public static Style createSimpleFaceStyle() {
+    		return SLD.createPointStyle("triangle",Color.BLACK,Color.YELLOW,1.0f,16);
+    }
+    
+    public static Style createFaceStyle() {
+    	Style style = null;
+    	FileInputStream inputStream;
+    	try {
+    		inputStream = new FileInputStream(new File("./data/rotating_symbol.sld"));
+    		SLDParser stylereader = new SLDParser(sf, inputStream);
+
+    		Style styles[] = stylereader.readXML();
+
+    		if(styles.length > 0) {
+    			style = styles[0];
+    		}
+    	} catch (FileNotFoundException e) {
+    		System.err.println("Unable to load expected SLD document.");
+    		e.printStackTrace(System.err);
+    	}
+    	if(style ==  null)
+    		style = createSimpleFaceStyle();
+    	return style;
+    }
 }
+

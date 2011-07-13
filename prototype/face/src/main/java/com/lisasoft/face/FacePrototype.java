@@ -5,23 +5,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JToolBar;
 
-import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.styling.Style;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.filter.identity.FeatureId;
-
-import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
-import com.lisasoft.face.map.MapComponent;
+import com.lisasoft.face.data.FaceImpl;
 import com.lisasoft.face.map.MapComponentFactory;
 import com.lisasoft.face.map.MapComponentImpl;
 import com.lisasoft.face.table.FaceTable;
@@ -84,12 +75,16 @@ public class FacePrototype extends JFrame {
         // c) toolbar (will need to add actions? on the MapContent - perhaps pass int a toolbar?)
     	
         getContentPane().setLayout(new BorderLayout());	
+        
+        JToolBar toolBar = new JToolBar();
+        getContentPane().add(toolBar, BorderLayout.NORTH);
+        
     	MapComponentFactory factory = new MapComponentFactory();
-    	map = factory.buildMapComponent();
     	
     	try {
+    		map = factory.buildMapComponent(toolBar);
     		File csvFile = new File("data/senario.csv");
-    		List<Face> faces = FaceDAO.load(csvFile);
+    		List<FaceImpl> faces = FaceDAO.load(csvFile);
     		System.out.println("loadFaces: " + faces.size());
 
     		//need to see map componenet with this faces data

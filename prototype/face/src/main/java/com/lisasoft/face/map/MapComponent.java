@@ -16,7 +16,7 @@ package com.lisasoft.face.map;
 import java.util.EventListener;
 import java.util.List;
 
-import com.lisasoft.face.data.Face;
+import com.lisasoft.face.data.FaceImpl;
 
 /**
  * The following interface is used to facilitate interaction between the MapComponents
@@ -30,7 +30,7 @@ import com.lisasoft.face.data.Face;
  * type system consisting of a FeatureType. Because this is a dynamic type system it is slihgtly
  * easier to have a "feature relational mapper" than a Java "object relational mapper".
  */
-public interface MapComponent<T extends Face> {
+public interface MapComponent {
     
     public interface SelectionListener extends EventListener {
         public void selectionChanged();
@@ -39,28 +39,28 @@ public interface MapComponent<T extends Face> {
     * Returns the list of faces currently displayed in the GIS map component.
     * @return the list of faces currently displayed in the GIS map component
     */
-    public List<T> getFaces();
+    public List<FaceImpl> getFaces();
 
     /**
     * Sets the list of faces to be displayed in the GIS map component.
     * 
     * @param faces the list of faces to be displayed in the GIS map component
     */
-    public void setFaces(List<T> faces);
+    public void setFaces(List<FaceImpl> faces);
 
     /**
     * Returns the currently selected faces in the GIS map component.
     * 
     * @return the currently selected faces in the GIS map component
     */
-    public List<T> getSelection();
+    public List<FaceImpl> getSelection();
 
     /**
     * Sets the currently selected faces in the GIS map component.
     * 
     * @param faces the faces to be selected in the GIS map component
     */
-    public void setSelection(List<T> faces);
+    public void setSelection(List<FaceImpl> faces);
 
     /**
     * Registers a listener that is notified whenever the user changes the selection in the GIS map component by

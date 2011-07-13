@@ -13,7 +13,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public class FaceFeatureReader implements FeatureReader<SimpleFeatureType, SimpleFeature> {
 
     private ContentState state;
-    private Iterator<Face> iterator;
+    private Iterator<FaceImpl> iterator;
 
     Face next; // next face
     Face face; // current face
@@ -23,7 +23,7 @@ public class FaceFeatureReader implements FeatureReader<SimpleFeatureType, Simpl
         FaceDataStore dataStore = (FaceDataStore) state.getEntry().getDataStore();
         
         // we grab a threadsafe copy on write list here to represent reading        
-        CopyOnWriteArrayList<Face> contents = dataStore.getData().contents();
+        CopyOnWriteArrayList<FaceImpl> contents = dataStore.getData().contents();
         iterator = contents.iterator();        
     }
 

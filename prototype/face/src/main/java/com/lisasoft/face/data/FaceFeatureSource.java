@@ -24,6 +24,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Point;
 
 public class FaceFeatureSource extends ContentFeatureSource {
+	public static String FACE_FEATURE_GEOMETRY_DESCRIPTOR = "Point";
 
     public FaceFeatureSource(ContentEntry entry, Query query) {
         super( entry, query );
@@ -77,7 +78,7 @@ public class FaceFeatureSource extends ContentFeatureSource {
         CoordinateReferenceSystem crs = getCRS();
         builder.setCRS( crs );
         
-        builder.add("Point", Point.class, crs );
+        builder.add(FACE_FEATURE_GEOMETRY_DESCRIPTOR, Point.class, crs );
         
         for( PropertyDescriptor property : info.getPropertyDescriptors() ){
             builder.add( property.getName(), property.getPropertyType() );
