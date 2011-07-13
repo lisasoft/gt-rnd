@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -97,9 +98,13 @@ public class FacePrototype extends JFrame {
     		System.out.println("Could not load Faces :"+eek);
     	}        
     	
-        getContentPane().add(map, BorderLayout.CENTER);
     	System.out.println("printy!");
-        table = new FaceTable(map);
+    	table = new FaceTable(map);
+    	
+    	JScrollPane scrollpane = new JScrollPane(table);
+    	
+        getContentPane().add(map, BorderLayout.CENTER);        
+        getContentPane().add(scrollpane, BorderLayout.SOUTH);
     }
     
     /**

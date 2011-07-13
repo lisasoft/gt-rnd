@@ -16,6 +16,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.lisasoft.face.data.Face;
+import com.lisasoft.face.data.FaceRow;
 
 public class FaceTableModel<T extends Face> extends AbstractTableModel {
 	
@@ -70,6 +71,12 @@ public class FaceTableModel<T extends Face> extends AbstractTableModel {
             for(Face face : faces){
             	
             	System.out.println(face.toString());
+            	ArrayList<Object> row = new ArrayList<Object>();
+                row.add(face.getNummer());
+                row.add(face.getSuedNordKoordinate());
+                row.add(face.getWestOstKoordinate());
+                row.add(face.getAngle());
+                publish( row.toArray() );
             	/*
             	//SimpleFeature simple = (SimpleFeature) feature;
                 Object[] values = face.getAttributes().toArray();

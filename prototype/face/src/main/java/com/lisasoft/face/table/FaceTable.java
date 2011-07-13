@@ -1,5 +1,6 @@
 package com.lisasoft.face.table;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JTable;
@@ -50,7 +51,7 @@ public class FaceTable extends JTable {
             SelectionListener listener = new SelectionListener(this, map);
             this.getSelectionModel().addListSelectionListener(listener);
             this.getColumnModel().getSelectionModel()
-                .addListSelectionListener(listener);          
+                .addListSelectionListener(listener);
             
         }
     }  
