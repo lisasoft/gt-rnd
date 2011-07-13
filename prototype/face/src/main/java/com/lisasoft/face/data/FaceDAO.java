@@ -132,7 +132,6 @@ public class FaceDAO {
             face.setStatus(reader.get(4));
             face.setInstalled(reader.get(5));
             face.setPeriod(reader.get(6));
-
             face.setPosting(reader.get(7));
             face.setArea(reader.get(8));
             face.setStreet(reader.get(9));
