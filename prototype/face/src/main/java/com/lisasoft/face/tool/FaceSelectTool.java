@@ -23,7 +23,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.identity.FeatureId;
 
-import com.lisasoft.face.SelectedStyleFactory;
+import com.lisasoft.face.map.SelectedStyleFactory;
 
 /**
  * 

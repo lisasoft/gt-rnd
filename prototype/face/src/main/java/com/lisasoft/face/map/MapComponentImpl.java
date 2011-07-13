@@ -28,7 +28,6 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContext;
 import org.geotools.swing.JMapPane;
 
-import com.lisasoft.face.SelectedStyleFactory;
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
 import com.lisasoft.face.data.FaceDataStore;

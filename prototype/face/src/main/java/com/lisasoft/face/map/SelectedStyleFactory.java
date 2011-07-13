@@ -1,4 +1,4 @@
-package com.lisasoft.face;
+package com.lisasoft.face.map;
 
 import java.awt.Color;
 import java.io.File;

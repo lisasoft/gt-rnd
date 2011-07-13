@@ -13,11 +13,11 @@ import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.CursorTool;
 import org.opengis.filter.Filter;
 
-import com.lisasoft.face.SelectedStyleFactory;
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
 import com.lisasoft.face.data.FaceFeatureSource;
 import com.lisasoft.face.map.MapComponentImpl;
+import com.lisasoft.face.map.SelectedStyleFactory;
 
 public class MapSelectionTool 
 		extends CursorTool 
