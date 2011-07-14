@@ -124,12 +124,8 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         super();
         this.repo = new DefaultRepository();
         this.raster = new HashMap<String, AbstractGridCoverage2DReader>();
+        System.out.println("Initialising empty FaceDAO");
         this.faces = new FaceDAO(new ArrayList<FaceImpl>(0));
-        this.faceStore = new FaceDataStore(this.faces);
-//        this.selectedFaces = new FaceDAO(new ArrayList<FaceImpl>(0));
-        this.selectedStore = new FaceDataStore(this.faces);
-        repo.register("Faces", this.faceStore);
-        repo.register("Selected Faces", this.selectedStore);
         this.addMapSelectionListener(selectionRefresh);
     }
 
@@ -148,7 +144,19 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     		this.getMapContext().removeLayer(selectedLayer);
     		this.selectedLayer = null;
     	}
+    	if(this.faceStore != null) {
+    		this.faceStore.dispose();
+    		this.faceStore = null;
+    	}
+    	if(this.selectedStore != null) {
+    		this.selectedStore.dispose();
+    		this.selectedStore = null;
+    	}
 		try {
+			this.faceStore = new FaceDataStore(this.faces);
+			this.selectedStore = new FaceDataStore(this.faces);
+			repo.register("Faces", this.faceStore);
+			repo.register("Selected Faces", this.selectedStore);
 			faceLayer = new FeatureLayer(
 					this.faceStore.getFeatureSource(this.faceStore
 							.getTypeNames()[0]),
@@ -193,6 +201,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
      */
     public void setFaces(List<FaceImpl> faces) {
         try {
+        	System.out.println("Receiving " + faces.size() + " faces.");
             this.faces = new FaceDAO(faces);
             List<FaceImpl> list = Collections.emptyList();
             setSelection(list);
