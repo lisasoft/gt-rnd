@@ -57,7 +57,7 @@ public class FaceFeatureReader implements FeatureReader<SimpleFeatureType, Simpl
         else {
             face = nextFace();
         }
-        SimpleFeature feature = getDataStore().toFeature( getFeatureType(), face );
+        SimpleFeature feature = getDataStore().toFeature( getFeatureType(), (FaceImpl) face );
         return feature;
     }
 

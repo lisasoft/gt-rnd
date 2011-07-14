@@ -66,21 +66,30 @@ public class FaceDataStore extends ContentDataStore {
         return data;
     }
 
-    public SimpleFeature toFeature(SimpleFeatureType schema, Face face) {
+    public SimpleFeature toFeature(SimpleFeatureType schema, FaceImpl face) {
         BeanInfo info = getData().getBeanInfo();
 
         SimpleFeatureBuilder build = new SimpleFeatureBuilder(schema);
         Map<String, PropertyDescriptor> lookup = access(info, schema);
         for( AttributeDescriptor attribute : schema.getAttributeDescriptors()){
             String name = attribute.getLocalName();
-            PropertyDescriptor descriptor = lookup.get(name);
-            Method read = descriptor.getReadMethod();
             Object value;
-            try {
-             // no argument getXXX() or isXXX()
-                value = read.invoke(face, null);
-            } catch (Exception e) {
-                value = null;
+            if( FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR.equals( name )){
+                value = face.getLocation();
+            }
+            else {
+                PropertyDescriptor descriptor = lookup.get(name);
+                if( descriptor == null ){
+                    System.err.println("Could not locate "+name+" in "+face+" using reflection");
+                    continue;
+                }
+                Method read = descriptor.getReadMethod();
+                try {
+                 // no argument getXXX() or isXXX()
+                    value = read.invoke(face, (Object[]) null);
+                } catch (Exception e) {
+                    value = null;
+                }
             }
             build.set(name,value);
         }
