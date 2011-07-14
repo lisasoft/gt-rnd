@@ -35,11 +35,11 @@ public class MapSelectionTool
 	}
 	
 	public void onMouseClicked(MapMouseEvent ev) {
-//		ReferencedEnvelope bbox = getFilterBox(ev.getPoint());
-//		if(bbox == null)
-//			return;
-//		Filter filter = SelectedStyleFactory.createBboxFilter(
-//				FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR, bbox);
+		ReferencedEnvelope bbox = getFilterBox(ev.getPoint());
+		if(bbox == null)
+			return;
+		Filter filter = SelectedStyleFactory.createBboxFilter(
+				FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR, bbox);
 //		SimpleFeatureCollection selectedFeatures = 
 //			mapPane.faceLayer.
 	}
