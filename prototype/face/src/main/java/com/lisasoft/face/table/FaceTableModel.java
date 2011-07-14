@@ -205,18 +205,18 @@ public class FaceTableModel extends AbstractTableModel {
     		editface.setSuedNordKoordinate(new BigDecimal(s));
     	}
         
-        //faces.remove(row);
-        //faces.add(row, editface);
+        faces.remove(row);
+        faces.add(row, editface);
         
         FaceImpl newFace = faces.get(row);
     	System.out.println("New Face nummer: " + newFace.getNummer() + " West: " + newFace.getWestOstKoordinate() + " Sued: " + newFace.getSuedNordKoordinate());
     	
-    	//for(FaceImpl f : faces){
-    	//	System.out.println("face: " + f.getNummer() + " West: " + f.getWestOstKoordinate() + " Sued: " + f.getSuedNordKoordinate());
-    	//}
+    	for(FaceImpl f : faces){
+    		System.out.println("face: " + f.getNummer() + " West: " + f.getWestOstKoordinate() + " Sued: " + f.getSuedNordKoordinate());
+    	}
     	
     	//map.setFaces(faces);
-    	//map.repaint();
+    	map.changeSelection(faces);
     }
 
     /**
