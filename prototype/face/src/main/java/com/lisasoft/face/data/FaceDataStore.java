@@ -73,14 +73,14 @@ public class FaceDataStore extends ContentDataStore {
         Map<String, PropertyDescriptor> lookup = access(info, schema);
         for( AttributeDescriptor attribute : schema.getAttributeDescriptors()){
             String name = attribute.getLocalName();
+            Object value;
             PropertyDescriptor descriptor = lookup.get(name);
             Method read = descriptor.getReadMethod();
-            Object value;
             try {
-             // no argument getXXX() or isXXX()
-                value = read.invoke(face, null);
+            	// no argument getXXX() or isXXX()
+            	value = read.invoke(face, null);
             } catch (Exception e) {
-                value = null;
+            	value = null;
             }
             build.set(name,value);
         }
