@@ -102,7 +102,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         public void selectionChanged() {
             MapLayerEvent event = new MapLayerEvent( selectedLayer, MapLayerEvent.DATA_CHANGED );
             MapLayerListEvent event2 = new MapLayerListEvent( getMapContext(), selectedLayer, -1, event );
-            MapComponentImpl.this.layerChanged( event2 );
+            MapComponentImpl.this.layerMoved( event2 );
             
             // Explicit this reference is a good programming practice
             //MapComponentImpl.this.layerChanged(event);
@@ -125,7 +125,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
                     || Face.ANGLE.equals(property)) {
                 MapLayerEvent event = new MapLayerEvent( faceLayer, MapLayerEvent.DATA_CHANGED );
                 MapLayerListEvent event2 = new MapLayerListEvent( getMapContext(), faceLayer, -1, event );
-                MapComponentImpl.this.layerChanged( event2 );
+                MapComponentImpl.this.layerMoved( event2 );
 
                 MapComponentImpl.this.repaint();
                 // if we had seperate layers we could check if face was in the selected
@@ -228,7 +228,6 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     }
 
     public List<FaceImpl> getSelection() {
-
         return (List<FaceImpl>) (selectedFaces != null ? 
         			new CopyOnWriteArrayList<FaceImpl>(selectedFaces) : 
         			Collections.emptyList());
@@ -249,6 +248,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     		selections.add(faces.lookup(id));
     	}
     	setSelection(selections, ids);
+    	fireMapSelection();
     }
     
     /**
@@ -263,6 +263,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     		ids.add(id);
     	}
     	setSelection(faces, ids);
+    	fireMapSelection();
     }
     
     /**
