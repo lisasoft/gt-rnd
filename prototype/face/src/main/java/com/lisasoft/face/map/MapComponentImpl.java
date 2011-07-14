@@ -219,6 +219,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         try {
         	System.out.println("Receiving " + faces.size() + " faces.");
             this.faces = new FaceDAO(faces);
+            this.faces.addPropertyChangeListener( dataChangeListener );
             List<FaceImpl> list = Collections.emptyList();
             setSelection(list);
             updateFaceLayers();
