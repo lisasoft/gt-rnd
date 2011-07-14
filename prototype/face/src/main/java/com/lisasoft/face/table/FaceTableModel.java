@@ -191,39 +191,32 @@ public class FaceTableModel extends AbstractTableModel {
     }
     
     public void setValueAt(Object value, int row, int col) {
-        //rowData[row][col] = value;
-    	System.out.println("+++++++++++++setValueAt+++++++++++++++");
+        System.out.println("+++++++++++++setValueAt+++++++++++++++");
     	System.out.println("value: " + value + " row: " + row + " col " + col);
-    	//List<FaceImpl> faces = this.faces;
     	
-    	FaceImpl f1 = faces.get(row);
-    	System.out.println("Numberf1: " + f1.getNummer() + " Sued: " + f1.getSuedNordKoordinate());
+    	FaceImpl editface = faces.get(row);
+    	System.out.println("Numberf1: " + editface.getNummer() + " Sued: " + editface.getSuedNordKoordinate());
     	
     	String s = String.valueOf(value);
     	
     	if(col == 10){
-    		f1.setWestOstKoordinate(new BigDecimal(s));
+    		editface.setWestOstKoordinate(new BigDecimal(s));
     	} else if(col == 11){
-    		f1.setSuedNordKoordinate(new BigDecimal(s));
+    		editface.setSuedNordKoordinate(new BigDecimal(s));
     	}
         
-        faces.remove(row);
-        faces.add(row, f1);
+        //faces.remove(row);
+        //faces.add(row, editface);
         
-        FaceImpl f122 = faces.get(row);
-    	System.out.println("Numberf122: " + f122.getNummer() + " West: " + f122.getWestOstKoordinate() + " Sued: " + f122.getSuedNordKoordinate());
+        FaceImpl newFace = faces.get(row);
+    	System.out.println("Numberf122: " + newFace.getNummer() + " West: " + newFace.getWestOstKoordinate() + " Sued: " + newFace.getSuedNordKoordinate());
     	
-    	for(FaceImpl f2 : faces){
-    		System.out.println("f2: " + f2.getNummer() + " West: " + f2.getWestOstKoordinate() + " Sued: " + f2.getSuedNordKoordinate());
+    	for(FaceImpl f : faces){
+    		System.out.println("f2: " + f.getNummer() + " West: " + f.getWestOstKoordinate() + " Sued: " + f.getSuedNordKoordinate());
     	}
     	
-    	map.setFaces(faces);
-    	map.repaint();
-    	
-    	//this.load = new TableWorker(faces);
-        //load.execute();
-    	
-        //fireTableChanged(e);
+    	//map.setFaces(faces);
+    	//map.repaint();
     }
 
     /**

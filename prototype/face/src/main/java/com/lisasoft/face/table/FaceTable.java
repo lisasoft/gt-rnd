@@ -43,7 +43,7 @@ public class FaceTable extends JTable {
     private MapComponentImpl map;
     
     public FaceTable( MapComponentImpl map ){
-        this.map = map;
+    	this.map = map;
         initi();
     }
 

@@ -58,7 +58,7 @@ public class FaceDAO {
      * 
      * See: http://spatialreference.org/ref/?search=ch1903
      */
-    public static String EPSG_CODE = "EPSG:2056";
+    public static String EPSG_CODE = "EPSG:4326";
 
     static GeometryFactory gf = JTSFactoryFinder.getGeometryFactory(null);
 
