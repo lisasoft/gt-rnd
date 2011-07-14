@@ -97,6 +97,7 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 			}
 		}
 		mapPane.setFaces(facesss);
+		
 	}
 
 	private Coordinate getCoordFromScreen(MapMouseEvent ev) {
