@@ -18,6 +18,8 @@ import java.awt.Dimension;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.geotools.swing.table.FeatureCollectionTableModel;
 

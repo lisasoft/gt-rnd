@@ -211,12 +211,18 @@ public class FaceTableModel extends AbstractTableModel {
         FaceImpl newFace = faces.get(row);
     	System.out.println("New Face nummer: " + newFace.getNummer() + " West: " + newFace.getWestOstKoordinate() + " Sued: " + newFace.getSuedNordKoordinate());
     	
+    	cache.clear();
+    	load = new TableWorker(faces);
+    	load.run();
+    	
     	for(FaceImpl f : faces){
     		System.out.println("face: " + f.getNummer() + " West: " + f.getWestOstKoordinate() + " Sued: " + f.getSuedNordKoordinate());
     	}
     	
-    	//map.setFaces(faces);
-    	map.setSelection(faces);
+    	map.setFaces(faces);
+    	List<FaceImpl> newSelected = faces.subList(row,row + 1);
+    	map.setSelection(newSelected);
+    	this.fireTableDataChanged();
     }
 
     /**
