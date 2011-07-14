@@ -248,7 +248,6 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     		selections.add(faces.lookup(id));
     	}
     	setSelection(selections, ids);
-    	fireMapSelection();
     }
     
     /**
@@ -263,33 +262,19 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     		ids.add(id);
     	}
     	setSelection(faces, ids);
-    	fireMapSelection();
     }
-    
+
     /**
-     * Informs the map component that the selection has been changed
-     * by the map itself.  This will fire change notifications.
+     * Internal method to update the selected layer style and selectedFaces in one
+     * atomic action.
      * @param faces
+     * @param ids
      */
-    public void changeSelection(List<FaceImpl> faces) {
-    	setSelection(faces);
-    	fireMapSelection();
-    }
-    
-    /**
-     * Informs the map component that the selection has been changed
-     * by the map itself.  This will fire change notifications.
-     * @param ids 
-     */
-    public void changeSelection(Set<FeatureId> ids) {
-    	setSelection(ids);
-    	fireMapSelection();
-    }
-    
     private void setSelection(List<FaceImpl> faces, Set<FeatureId> ids) {
     		this.selectedFaces = faces;
             this.selectedLayer.setStyle(SelectedStyleFactory.createSelectedStyle(
             		ids, FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR));
+            fireMapSelection();
     }
     
     @Override
