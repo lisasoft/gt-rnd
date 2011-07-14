@@ -20,10 +20,10 @@
 	        <ExternalGraphic>
                   <OnlineResource
                     xlink:type="simple"
-                    xlink:href="file://triangle.png" />
+                    xlink:href="file:///C:/src/gt-rnd/prototype/face/data/triangle.png" />
                   <Format>image/png</Format>
                 </ExternalGraphic>
-              <Rotation><ogc:PropertyName>Angle</ogc:PropertyName></Rotation>
+              <Rotation><ogc:PropertyName>angle</ogc:PropertyName></Rotation>
             </Graphic>
           </PointSymbolizer>
         </Rule>
