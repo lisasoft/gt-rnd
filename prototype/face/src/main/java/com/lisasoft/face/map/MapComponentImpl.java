@@ -155,8 +155,8 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
 		try {
 			this.faceStore = new FaceDataStore(this.faces);
 			this.selectedStore = new FaceDataStore(this.faces);
-			repo.register("Faces", this.faceStore);
-			repo.register("Selected Faces", this.selectedStore);
+//			repo.register("Faces", this.faceStore);
+//			repo.register("Selected Faces", this.selectedStore);
 			faceLayer = new FeatureLayer(
 					this.faceStore.getFeatureSource(this.faceStore
 							.getTypeNames()[0]),
@@ -249,6 +249,8 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     }
 
     public void dispose() {
+    	this.faceStore.dispose();
+    	this.selectedStore.dispose();
         for (DataStore dataStore : repo.getDataStores()) {
             try {
                 dataStore.dispose();
