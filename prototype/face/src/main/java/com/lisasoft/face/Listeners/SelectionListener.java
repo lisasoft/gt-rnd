@@ -68,7 +68,7 @@ MapComponent.SelectionListener {
 			}
 			map.setSelection(ids);
 			table.getSelectionModel().addListSelectionListener(this);
-			map.removeMapSelectionListener(this);
+			map.addMapSelectionListener(this);
 		}
 	}
 
@@ -105,7 +105,7 @@ MapComponent.SelectionListener {
 			}
 		}
 		table.getSelectionModel().addListSelectionListener(this);
-		map.removeMapSelectionListener(this);
+		map.addMapSelectionListener(this);
 		table.repaint();
 	}
 }
