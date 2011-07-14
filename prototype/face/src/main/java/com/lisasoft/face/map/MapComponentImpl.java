@@ -223,31 +223,70 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         			new CopyOnWriteArrayList<FaceImpl>(selectedFaces) : 
         			Collections.emptyList());
     }
-
+    
+    /**
+     * Informs the map component that something outside the control of 
+     * the map has changed the selection, and the map must respond.
+     * @param ids
+     */
+    public void setSelection(Set<FeatureId> ids) {
+    	List<FaceImpl> selections = new ArrayList<FaceImpl>(ids.size());
+    	for(FeatureId fid : ids) {
+    		if(fid == null)
+    			continue;
+    		String fidstring = fid.getID().substring("Face.".length());
+    		long id = Long.parseLong(fidstring);
+    		selections.add(faces.lookup(id));
+    	}
+    	setSelection(selections, ids);
+    }
+    
+    /**
+     * Informs the map component that something outside the control of 
+     * the map has changed the selection, and the map must respond.
+     * @param faces 
+     */
     public void setSelection(List<FaceImpl> faces) {
     	Set<FeatureId> ids = new HashSet<FeatureId>();
     	for(FaceImpl face : faces) {
     		FeatureId id = new FeatureIdImpl("Face." + face.getNummer());
+    		ids.add(id);
     	}
     	setSelection(faces, ids);
+    }
+    
+    /**
+     * Informs the map component that the selection has been changed
+     * by the map itself.  This will fire change notifications.
+     * @param faces
+     */
+    public void changeSelection(List<FaceImpl> faces) {
+    	setSelection(faces);
+    	fireMapSelection();
+    }
+    
+    /**
+     * Informs the map component that the selection has been changed
+     * by the map itself.  This will fire change notifications.
+     * @param ids 
+     */
+    public void changeSelection(Set<FeatureId> ids) {
+    	setSelection(ids);
+    	fireMapSelection();
     }
     
     private void setSelection(List<FaceImpl> faces, Set<FeatureId> ids) {
     		this.selectedFaces = faces;
             this.selectedLayer.setStyle(SelectedStyleFactory.createSelectedStyle(
             		ids, FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR));
-            this.repaint();
-            fireMapSelection();
     }
     
-    public void setSelection(Set<FeatureId> ids) {
-    	List<FaceImpl> selections = new ArrayList<FaceImpl>(ids.size());
-    	for(FeatureId fid : ids) {
-    		long id = Long.parseLong(fid.getID().substring("Face.".length()));
-    		selections.add(faces.lookup(id));
-    	}
-    	setSelection(selections, ids);
+    @Override
+    public void repaint() {
+    	System.out.println("Repainting map component.");
+    	super.repaint();
     }
+    
     /**
      * This is a really simple event notification.
      */

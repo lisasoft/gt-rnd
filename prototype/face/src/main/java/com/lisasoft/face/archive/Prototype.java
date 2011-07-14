@@ -102,7 +102,6 @@ import org.opengis.style.Stroke;
 import com.lisasoft.face.map.MapComponent;
 import com.lisasoft.face.map.MapComponentFactory;
 import com.lisasoft.face.map.SelectedStyleFactory;
-import com.lisasoft.face.tool.FaceSelectTool;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;

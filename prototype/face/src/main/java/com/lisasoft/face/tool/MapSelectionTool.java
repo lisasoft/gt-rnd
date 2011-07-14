@@ -64,7 +64,7 @@ public class MapSelectionTool
 				ids.add(feat.getIdentifier());
 			}
 			System.out.println("Selected " + ids.size() + " features.");
-			mapPane.setSelection(ids);
+			mapPane.changeSelection(ids);
 
 		} catch(IOException ex) {
 			System.err.println("Error determining selection.");

@@ -11,7 +11,7 @@
  *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  *  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  */
-package com.lisasoft.face.tool;
+package com.lisasoft.face.archive;
 
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;

@@ -63,8 +63,9 @@ public class FaceTable extends JTable {
             
             SelectionListener listener = new SelectionListener(this, map);
             this.getSelectionModel().addListSelectionListener(listener);
-            this.getColumnModel().getSelectionModel()
-                .addListSelectionListener(listener);
+//            this.getColumnModel().getSelectionModel()
+//                .addListSelectionListener(listener);
+            this.map.addMapSelectionListener(listener);
             
         }
     }  

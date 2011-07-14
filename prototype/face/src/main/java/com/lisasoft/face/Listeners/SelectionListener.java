@@ -19,8 +19,10 @@ import java.util.Set;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.geotools.filter.identity.FeatureIdImpl;
 import org.opengis.filter.identity.FeatureId;
 
+import com.lisasoft.face.map.MapComponent;
 import com.lisasoft.face.map.MapComponentImpl;
 import com.lisasoft.face.table.FaceTable;
 
@@ -30,7 +32,9 @@ import com.lisasoft.face.table.FaceTable;
  *
  * @author Scott Henderson (LISAsoft)
  */
-public class SelectionListener implements ListSelectionListener {
+public class SelectionListener 
+		implements ListSelectionListener, 
+		MapComponent.SelectionListener {
 	
 	private FaceTable table;
 	
@@ -51,30 +55,26 @@ public class SelectionListener implements ListSelectionListener {
             Set<FeatureId> ids = new HashSet<FeatureId>();
             
             for(int i = 0; i < sel.length; i++){
-            	//ids.add(getFeatureId(sel[i]));
+            	FeatureId id = getFeatureId(sel[i]);
+            	if(id != null)
+            		ids.add(id);
             }
-            
-            //Style style = SelectedStyleFactory.createSelectedStyle(ids, FACE_GEOMETRY_NAME);
-    		//selectedFaceLayer.setStyle(style);
-   	        map.repaint();
-            
+            map.setSelection(ids);
         }
     }
     
     public FeatureId getFeatureId(int row){
-    	
-        /*SimpleFeatureIterator iter = table.getfeatures();
-        SimpleFeature feature;
-        
-		try {	
-			for (int i = 0; i < row; i++){
-				feature = iter.next();
-			}
-			feature = iter.next();    			
-			
-		} finally {
-			iter.close();
-		}*/
+    	Object obj = table.getModel().getValueAt(row, 0);
+    	if(obj instanceof Long) {
+    		Long nummer = (Long)obj;
+    		FeatureId id = new FeatureIdImpl("Face." + nummer);
+    		return id;
+    	}
     	return null;
     }
+
+	public void selectionChanged() {
+//		map.getSelection();
+	
+	}
 }
