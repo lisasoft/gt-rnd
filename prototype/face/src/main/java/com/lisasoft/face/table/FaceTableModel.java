@@ -103,7 +103,7 @@ public class FaceTableModel extends AbstractTableModel {
                 row.add(face.getStatus());
                 row.add(face.getInstalled());
                 row.add(face.getPeriod());
-                row.add(face.getPosting());
+//                row.add(face.getPosting());
                 row.add(face.getArea());
                 row.add(face.getStreet());
                 row.add(face.getNumber());                
