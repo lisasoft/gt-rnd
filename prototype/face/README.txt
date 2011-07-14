@@ -36,10 +36,7 @@ HOW TO RUN ECLIPSE
 
 h2. Tasks
 
-0. SH: Commit change to EPSG code so that the triangles show up in the correct location.
-1. SH: Use a list selection model on the Table to update the selectedLayer filter; using the
-   existing code as an example of selection using a set of feature IDs.
-2. SH: DuplicatingStyleVisitor needed to make relative icon references be absolute
+1. JG: DuplicatingStyleVisitor needed to make relative icon references be absolute
    (alternatives listed below) but this one we can perform in our application. See examples
    in geotools docs; should be a class with one method overriden to peform the transformation.
    similar to XSLT but for object data strutures.
@@ -47,22 +44,18 @@ h2. Tasks
    Note the style can also use a Label (in blue) and a line from the point location to the label
    offset. This line can be drawn with a line symbolizer using a geometry function (rather than
    just a propertyName reference).
-3. JG: DAO is code complete producing features; need to improve test coverage
-   and then migrate Prototype to use it use it (in feature form).
-4. SH: Create a table model based on the DAO object List<Face>
-5. ML: Refactor working code from prototype to MapComponent; tools will need to be seperate classes
-   etc...
-6. SH: Ask MapComponent to work with Objects directly for the table model
-7. SH: Ask MapComponent to store the selected features; and base the selected layer and tool selection
-   and list selection model off this
-8. JG: Hook up MapComponent / FaceDAO events, property listeners and so on
-9. JG: Review requirements for supported status with mbedward (see below)
-10. JG: Go over assessment of this solution/approach
+2. JG: Review requirements for supported status with mbedward (see below)
+3. JG: Go over assessment of this solution/approach
 
 h2. Feedback on gt-swing
 
 The following issues were identified that made coding more verbose than needed:
 
+* Unable to smoothly ask the map to redraw itself in response to selection changes; since we do
+  not have a layer list this was difficult. The JMapComponent needs a method to accept
+  MapChangedEvents and trigger the appropriate redraw activity.
+  (This was actually amsuing as we would call JComponent.repaint() and get the same map generated
+   as the component draws into a back buffer).
 * MapMouseEvent ReferencedEnvelope based on number of pixels: https://jira.codehaus.org/browse/GEOT-3715
   Update this issue has been closed (2 day response time).
 

@@ -32,6 +32,8 @@ import org.geotools.data.FeatureSource;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContext;
+import org.geotools.map.event.MapLayerEvent;
+import org.geotools.map.event.MapLayerListEvent;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
 import org.opengis.filter.identity.FeatureId;
@@ -98,8 +100,12 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
      */
     SelectionListener selectionRefresh = new SelectionListener() {
         public void selectionChanged() {
+            MapLayerEvent event = new MapLayerEvent( selectedLayer, MapLayerEvent.DATA_CHANGED );
+            MapLayerListEvent event2 = new MapLayerListEvent( getMapContext(), selectedLayer, -1, event );
+            MapComponentImpl.this.layerChanged( event2 );
+            
             // Explicit this reference is a good programming practice
-            MapComponentImpl.this.repaint();
+            //MapComponentImpl.this.layerChanged(event);
         }
     };
     
@@ -117,6 +123,10 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
             String property = evt.getPropertyName();
             if (Face.SUED_NORD_KOORDINATE.equals(property) || Face.WEST_OST_KOORDINATE.equals(property)
                     || Face.ANGLE.equals(property)) {
+                MapLayerEvent event = new MapLayerEvent( faceLayer, MapLayerEvent.DATA_CHANGED );
+                MapLayerListEvent event2 = new MapLayerListEvent( getMapContext(), faceLayer, -1, event );
+                MapComponentImpl.this.layerChanged( event2 );
+
                 MapComponentImpl.this.repaint();
                 // if we had seperate layers we could check if face was in the selected
                 // set and just redraw what was needed.
