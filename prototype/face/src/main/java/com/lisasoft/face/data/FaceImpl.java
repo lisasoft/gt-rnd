@@ -74,8 +74,7 @@ public class FaceImpl implements Face {
      * BigDecimal (is this a CRS measured in cm ??)
      */
     Point getLocation() {
-        //Coordinate coordinate = new Coordinate(x.doubleValue(), y.doubleValue());
-    	Coordinate coordinate = new Coordinate(y.doubleValue(), x.doubleValue());
+        Coordinate coordinate = new Coordinate(x.doubleValue(), y.doubleValue());
         Point pt = gf.createPoint(coordinate);
         return pt;
     }

@@ -74,7 +74,7 @@ public class FaceFeatureSource extends ContentFeatureSource {
 
     public CoordinateReferenceSystem getCRS() {
         try {
-            CoordinateReferenceSystem crs = CRS.decode(FaceDAO.EPSG_CODE);
+            CoordinateReferenceSystem crs = CRS.decode(FaceDAO.EPSG_CODE, true);
             return crs;
         } catch (Exception e) {
             return null;

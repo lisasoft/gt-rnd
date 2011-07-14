@@ -129,6 +129,8 @@ public class FacePrototype extends JFrame {
         // marked final so we can refer to it from a window listener
 
         final FacePrototype app = new FacePrototype();
+        
+        System.setProperty("org.geotools.referencing.forceXY", "true");
 
         // configuration
         app.init();
