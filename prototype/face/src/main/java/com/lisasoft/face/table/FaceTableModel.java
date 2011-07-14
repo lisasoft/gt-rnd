@@ -216,7 +216,7 @@ public class FaceTableModel extends AbstractTableModel {
     	}
     	
     	//map.setFaces(faces);
-    	map.changeSelection(faces);
+    	map.setSelection(faces);
     }
 
     /**
