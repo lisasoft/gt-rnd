@@ -209,11 +209,11 @@ public class FaceTableModel extends AbstractTableModel {
         //faces.add(row, editface);
         
         FaceImpl newFace = faces.get(row);
-    	System.out.println("Numberf122: " + newFace.getNummer() + " West: " + newFace.getWestOstKoordinate() + " Sued: " + newFace.getSuedNordKoordinate());
+    	System.out.println("New Face nummer: " + newFace.getNummer() + " West: " + newFace.getWestOstKoordinate() + " Sued: " + newFace.getSuedNordKoordinate());
     	
-    	for(FaceImpl f : faces){
-    		System.out.println("f2: " + f.getNummer() + " West: " + f.getWestOstKoordinate() + " Sued: " + f.getSuedNordKoordinate());
-    	}
+    	//for(FaceImpl f : faces){
+    	//	System.out.println("face: " + f.getNummer() + " West: " + f.getWestOstKoordinate() + " Sued: " + f.getSuedNordKoordinate());
+    	//}
     	
     	//map.setFaces(faces);
     	//map.repaint();
