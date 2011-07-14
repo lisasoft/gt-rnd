@@ -250,18 +250,18 @@ public class FaceDAO {
             face.setStatus(reader.get(4));
             face.setInstalled(reader.get(5));
             face.setPeriod(reader.get(6));
-            face.setPosting(reader.get(7));
-            face.setArea(reader.get(8));
-            face.setStreet(reader.get(9));
-            face.setNumber(reader.get(10));
+//            face.setPosting(reader.get(7));
+            face.setArea(reader.get(7));
+            face.setStreet(reader.get(8));
+            face.setNumber(reader.get(9));
 
-            double x = Double.parseDouble(reader.get(11));
+            double x = Double.parseDouble(reader.get(10));
             face.setWestOstKoordinate(new BigDecimal(x));
 
-            double y = Double.parseDouble(reader.get(12));
+            double y = Double.parseDouble(reader.get(11));
             face.setSuedNordKoordinate(new BigDecimal(y));
-            face.setAngle(reader.get(13));
-            face.setCategory(reader.get(14));
+            face.setAngle(reader.get(12));
+            face.setCategory(reader.get(13));
 
             faceList.add(face);
         }
