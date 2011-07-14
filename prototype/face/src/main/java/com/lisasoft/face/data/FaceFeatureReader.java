@@ -72,7 +72,11 @@ public class FaceFeatureReader implements FeatureReader<SimpleFeatureType, Simpl
     }
     
     private Face nextFace(){
-        return iterator == null ? null : iterator.next();
+    	try {
+    		return iterator == null ? null : iterator.next();
+    	} catch(NoSuchElementException ex) {
+    		return null;
+    	}
     }
 
     public void close() throws IOException {
