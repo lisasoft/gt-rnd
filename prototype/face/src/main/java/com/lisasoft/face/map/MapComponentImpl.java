@@ -102,6 +102,10 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
             MapComponentImpl.this.repaint();
         }
     };
+    
+    public FaceDataStore getDataStore() {
+    	return faceStore;
+    }
 
     /**
      * This is a listener used to watch the FaceDAO in order to notice if the data is edited (either
@@ -221,10 +225,29 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     }
 
     public void setSelection(List<FaceImpl> faces) {
-            this.selectedFaces = faces;
+    	Set<FeatureId> ids = new HashSet<FeatureId>();
+    	for(FaceImpl face : faces) {
+    		FeatureId id = new FeatureIdImpl("Face." + face.getNummer());
+    	}
+    	setSelection(faces, ids);
+    }
+    
+    private void setSelection(List<FaceImpl> faces, Set<FeatureId> ids) {
+    		this.selectedFaces = faces;
+            this.selectedLayer.setStyle(SelectedStyleFactory.createSelectedStyle(
+            		ids, FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR));
+            this.repaint();
             fireMapSelection();
     }
-
+    
+    public void setSelection(Set<FeatureId> ids) {
+    	List<FaceImpl> selections = new ArrayList<FaceImpl>(ids.size());
+    	for(FeatureId fid : ids) {
+    		long id = Long.parseLong(fid.getID().substring("Face.".length()));
+    		selections.add(faces.lookup(id));
+    	}
+    	setSelection(selections, ids);
+    }
     /**
      * This is a really simple event notification.
      */

@@ -6,15 +6,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import org.geotools.data.DataStore;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.ContentFeatureCollection;
+import org.geotools.data.store.ContentFeatureSource;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.CursorTool;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
+import org.opengis.filter.identity.FeatureId;
 
-import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
+import com.lisasoft.face.data.FaceDataStore;
 import com.lisasoft.face.data.FaceFeatureSource;
 import com.lisasoft.face.map.MapComponentImpl;
 import com.lisasoft.face.map.SelectedStyleFactory;
@@ -42,6 +54,23 @@ public class MapSelectionTool
 				FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR, bbox);
 //		SimpleFeatureCollection selectedFeatures = 
 //			mapPane.faceLayer.
+		Set<FeatureId> ids = new HashSet<FeatureId>();
+		try {
+			DataStore store = mapPane.getDataStore();
+			SimpleFeatureSource feats = store.getFeatureSource(store.getTypeNames()[0]);
+			FeatureIterator<SimpleFeature> it = feats.getFeatures(filter).features();
+			while(it.hasNext()) {
+				SimpleFeature feat = it.next();
+				ids.add(feat.getIdentifier());
+			}
+			System.out.println("Selected " + ids.size() + " features.");
+			mapPane.setSelection(ids);
+
+		} catch(IOException ex) {
+			System.err.println("Error determining selection.");
+			ex.printStackTrace(System.err);
+		}
+		
 	}
 	
 	private ReferencedEnvelope getFilterBox(Point pnt) {

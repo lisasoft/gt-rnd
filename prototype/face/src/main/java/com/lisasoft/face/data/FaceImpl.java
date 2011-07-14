@@ -75,7 +75,8 @@ public class FaceImpl implements Face {
      */
     Point getLocation() {
         Coordinate coordinate = new Coordinate(x.doubleValue(), y.doubleValue());
-        return gf.createPoint(coordinate);
+        Point pt = gf.createPoint(coordinate);
+        return pt;
     }
 
     public String getType() {
