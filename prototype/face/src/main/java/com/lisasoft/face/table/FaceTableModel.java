@@ -172,6 +172,15 @@ public class FaceTableModel extends AbstractTableModel {
         }
         return cache.size();
     }
+    
+    /**
+     * Cells 10 and 11 are editable
+     *
+     * @return true if editable
+     */
+    public boolean isCellEditable(int row, int col){
+    	return (col == 10 || col == 11) ? true : false; 
+    }
 
     /**
      * Get the value of a specified table entry
