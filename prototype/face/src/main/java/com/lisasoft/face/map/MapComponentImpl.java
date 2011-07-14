@@ -19,20 +19,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultRepository;
 import org.geotools.data.FeatureSource;
+import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContext;
+import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
+import org.opengis.filter.identity.FeatureId;
 
 import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceDAO;
 import com.lisasoft.face.data.FaceDataStore;
+import com.lisasoft.face.data.FaceFeatureSource;
 import com.lisasoft.face.data.FaceImpl;
 
 /**
@@ -62,7 +69,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     /*
      * The artifacts required for the selection layer; it is responsible for holding onto a list.
      */
-    FaceDAO selectedFaces;
+    List<FaceImpl> selectedFaces;
 
     /**
      * This is a map layer used to display faces provided by setSelection
@@ -119,26 +126,60 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         this.raster = new HashMap<String, AbstractGridCoverage2DReader>();
         this.faces = new FaceDAO(new ArrayList<FaceImpl>(0));
         this.faceStore = new FaceDataStore(this.faces);
-        this.selectedFaces = new FaceDAO(new ArrayList<FaceImpl>(0));
-        this.selectedStore = new FaceDataStore(this.selectedFaces);
+//        this.selectedFaces = new FaceDAO(new ArrayList<FaceImpl>(0));
+        this.selectedStore = new FaceDataStore(this.faces);
+        repo.register("Faces", this.faceStore);
+        repo.register("Selected Faces", this.selectedStore);
         this.addMapSelectionListener(selectionRefresh);
     }
 
     @Override
     public void setMapContext(MapContext context) {
-        super.setMapContext(context);
-        /*
-         * For the moment, let's ignore this. try { faceLayer = new FeatureLayer(
-         * this.faceStore.getFeatureSource(this.faceStore.getTypeNames()[0]),
-         * SelectedStyleFactory.createSimpleFaceStyle()); this.getMapContext().addLayer(faceLayer);
-         * selectedLayer = new FeatureLayer(
-         * this.selectedStore.getFeatureSource(this.faceStore.getTypeNames()[0]),
-         * SelectedStyleFactory.createExcludeStyle()); this.getMapContext().addLayer(selectedLayer);
-         * } catch(IOException ex) {
-         * System.err.println("Failure to create the expected face layers.");
-         * ex.printStackTrace(System.err); }
-         */
+		super.setMapContext(context);
+		updateFaceLayers();
+	}
+    
+    private void updateFaceLayers() {
+    	if(this.faceLayer != null) {
+    		this.getMapContext().removeLayer(faceLayer);
+    		this.faceLayer = null;
+    	}
+    	if(this.selectedLayer != null) {
+    		this.getMapContext().removeLayer(selectedLayer);
+    		this.selectedLayer = null;
+    	}
+		try {
+			faceLayer = new FeatureLayer(
+					this.faceStore.getFeatureSource(this.faceStore
+							.getTypeNames()[0]),
+					SelectedStyleFactory.createFaceStyle());
+			this.getMapContext().addLayer(faceLayer);
+			Style selectedStyle = null;
+			if(this.selectedFaces != null && this.selectedFaces.size() > 0) {
+				selectedStyle = SelectedStyleFactory.createSelectedStyle(
+						getFidList(selectedFaces), 
+						FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR);
+			} else {
+				selectedStyle = SelectedStyleFactory.createExcludeStyle();
+			}
+			selectedLayer = new FeatureLayer(
+					this.selectedStore.getFeatureSource(this.faceStore
+							.getTypeNames()[0]), selectedStyle);
+			this.getMapContext().addLayer(selectedLayer);
+		} catch (IOException ex) {
+			System.err.println("Failure to create the expected face layers.");
+			ex.printStackTrace(System.err);
+		}
     }
+    
+    private Set<FeatureId> getFidList(List<FaceImpl> faces) {
+    	Set<FeatureId> fids = new HashSet<FeatureId>();
+    	for(FaceImpl face : faces) {
+    		FeatureId fid = new FeatureIdImpl("Face." + face.getNumber());
+    		System.out.println("Fiding up " + fid);
+    	}
+    	return fids;
+   }
 
     // MAP COMPONENT INTERFACE
     public List<FaceImpl> getFaces() {
@@ -153,6 +194,9 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     public void setFaces(List<FaceImpl> faces) {
         try {
             this.faces = new FaceDAO(faces);
+            List<FaceImpl> list = Collections.emptyList();
+            setSelection(list);
+            updateFaceLayers();
         } catch (IOException ex) {
             System.err.println("Error accepting faces.");
             ex.printStackTrace(System.err);
@@ -162,19 +206,14 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
 
     public List<FaceImpl> getSelection() {
 
-        return (List<FaceImpl>) (selectedFaces != null ? selectedFaces.contents() : Collections
-                .emptyList());
+        return (List<FaceImpl>) (selectedFaces != null ? 
+        			new CopyOnWriteArrayList<FaceImpl>(selectedFaces) : 
+        			Collections.emptyList());
     }
 
     public void setSelection(List<FaceImpl> faces) {
-        try {
-            this.selectedFaces = new FaceDAO(faces);
+            this.selectedFaces = faces;
             fireMapSelection();
-        } catch (IOException ex) {
-            System.err.println("Error accepting faces.");
-            ex.printStackTrace(System.err);
-            this.selectedFaces = null;
-        }
     }
 
     /**
