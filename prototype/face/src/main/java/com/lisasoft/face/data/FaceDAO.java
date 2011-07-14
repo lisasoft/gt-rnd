@@ -167,7 +167,7 @@ public class FaceDAO {
      * @param nummber
      * @return Face, or null if not found
      */
-    FaceImpl lookup(long nummber) {
+    public FaceImpl lookup(long nummber) {
         for (FaceImpl face : contents) {
             if (nummber == face.getNummer()) {
                 return face; // found!
@@ -214,7 +214,7 @@ public class FaceDAO {
         return info;
 
     }
-
+    
     /**
      * Used to read in from a CSV file; created as a static method for ease of testing.
      * 
