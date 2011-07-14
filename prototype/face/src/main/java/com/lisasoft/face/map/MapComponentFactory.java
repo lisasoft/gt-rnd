@@ -63,6 +63,7 @@ import com.lisasoft.face.data.Face;
 import com.lisasoft.face.data.FaceImpl;
 import com.lisasoft.face.table.FaceTable;
 import com.lisasoft.face.tool.MapSelectionTool;
+import com.lisasoft.face.tool.PointDragTool;
 
 public class MapComponentFactory {
     private File dataRoot = new File(".");
@@ -104,6 +105,11 @@ public class MapComponentFactory {
         toolBar.add(selectButton);
 
         selectButton.addActionListener(new MapSelectionTool(component));
+        
+        JButton moveButton = new JButton("Move");
+        toolBar.add(moveButton);
+        
+        moveButton.addActionListener(new PointDragTool(component));
 
         toolBar.setSize(800, 100);
 
