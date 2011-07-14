@@ -160,7 +160,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
 			faceLayer = new FeatureLayer(
 					this.faceStore.getFeatureSource(this.faceStore
 							.getTypeNames()[0]),
-					SelectedStyleFactory.createFaceStyle());
+					SelectedStyleFactory.createSimpleFaceStyle());
 			this.getMapContext().addLayer(faceLayer);
 			Style selectedStyle = null;
 			if(this.selectedFaces != null && this.selectedFaces.size() > 0) {
