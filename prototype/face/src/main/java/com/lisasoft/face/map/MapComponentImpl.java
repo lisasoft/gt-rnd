@@ -169,8 +169,6 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
 		try {
 			this.faceStore = new FaceDataStore(this.faces);
 			this.selectedStore = new FaceDataStore(this.faces);
-//			repo.register("Faces", this.faceStore);
-//			repo.register("Selected Faces", this.selectedStore);
 			faceLayer = new FeatureLayer(
 					this.faceStore.getFeatureSource(this.faceStore
 							.getTypeNames()[0]),
@@ -274,6 +272,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     		this.selectedFaces = faces;
             this.selectedLayer.setStyle(SelectedStyleFactory.createSelectedStyle(
             		ids, FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR));
+            repaint();
             fireMapSelection();
     }
     
