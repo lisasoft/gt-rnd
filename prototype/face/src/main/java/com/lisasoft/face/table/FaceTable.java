@@ -55,7 +55,7 @@ public class FaceTable extends JTable {
         // SH: Please configure table here; you can inner classed or break out seperate classes
     	
     	if (map.getFaces() != null) {
-            FaceTableModel model = new FaceTableModel(map.getFaces());
+            FaceTableModel model = new FaceTableModel(map);
             
             this.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             this.setPreferredScrollableViewportSize(new Dimension(800, 100));

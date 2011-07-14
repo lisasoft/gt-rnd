@@ -14,6 +14,7 @@
 package com.lisasoft.face.table;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 
 import com.lisasoft.face.data.FaceImpl;
+import com.lisasoft.face.map.MapComponentImpl;
 
 /**
  * This is a FaceTableModel designed to work in collaboration with FaceTable in order to
@@ -135,12 +137,18 @@ public class FaceTableModel extends AbstractTableModel {
 	
 	TableWorker load;
 	
+	List<FaceImpl> faces;
+	
+	MapComponentImpl map;
+	
     /**
      * Constructor
      *
      * @param features the feature collection to load into the table
      */
-    public FaceTableModel(List<FaceImpl> faces){
+    public FaceTableModel(MapComponentImpl map){
+    	this.map = map;
+		this.faces = map.getFaces();
     	this.load = new TableWorker(faces);
         load.execute();
     }
@@ -180,6 +188,42 @@ public class FaceTableModel extends AbstractTableModel {
      */
     public boolean isCellEditable(int row, int col){
     	return (col == 10 || col == 11) ? true : false; 
+    }
+    
+    public void setValueAt(Object value, int row, int col) {
+        //rowData[row][col] = value;
+    	System.out.println("+++++++++++++setValueAt+++++++++++++++");
+    	System.out.println("value: " + value + " row: " + row + " col " + col);
+    	//List<FaceImpl> faces = this.faces;
+    	
+    	FaceImpl f1 = faces.get(row);
+    	System.out.println("Numberf1: " + f1.getNummer() + " Sued: " + f1.getSuedNordKoordinate());
+    	
+    	String s = String.valueOf(value);
+    	
+    	if(col == 10){
+    		f1.setWestOstKoordinate(new BigDecimal(s));
+    	} else if(col == 11){
+    		f1.setSuedNordKoordinate(new BigDecimal(s));
+    	}
+        
+        faces.remove(row);
+        faces.add(row, f1);
+        
+        FaceImpl f122 = faces.get(row);
+    	System.out.println("Numberf122: " + f122.getNummer() + " West: " + f122.getWestOstKoordinate() + " Sued: " + f122.getSuedNordKoordinate());
+    	
+    	for(FaceImpl f2 : faces){
+    		System.out.println("f2: " + f2.getNummer() + " West: " + f2.getWestOstKoordinate() + " Sued: " + f2.getSuedNordKoordinate());
+    	}
+    	
+    	map.setFaces(faces);
+    	map.repaint();
+    	
+    	//this.load = new TableWorker(faces);
+        //load.execute();
+    	
+        //fireTableChanged(e);
     }
 
     /**
