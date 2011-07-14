@@ -1,14 +1,19 @@
 package com.lisasoft.face.tool;
 
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.geotools.referencing.CRS;
 import org.geotools.swing.event.MapMouseEvent;
@@ -36,9 +41,11 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 	}
 	
 	private FeatureId draggingFeature;
+	private Point lastPoint;
 	
 	@Override
 	public void onMousePressed(MapMouseEvent ev) {
+		lastPoint = ev.getPoint();
 		try {
 			Set<FeatureId> ids = getSelectedIds(ev);
 			if(ids.size() != 1) {
@@ -54,16 +61,26 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 	}
 	
 	@Override
-	public void onMouseReleased(MapMouseEvent ev) {
+	public void onMouseDragged(MapMouseEvent ev) {
 		if(draggingFeature == null)
 			return;
-		/*
-		 * Need to render something here.  Not yet sure what.
-		 */
+		Graphics g = mapPane.getGraphics(); 
+		Point pnt = ev.getPoint();
+		try {
+			File imageFile = new File("data/crosshairs.png");
+			Image img = ImageIO.read(imageFile);
+			int width = img.getWidth(null);
+			int height = img.getHeight(null);
+			mapPane.repaint();
+			g.drawImage(img, (ev.getX() - width/2), (ev.getY() - height/2), null);
+		} catch(IOException ex) {
+			System.err.println("Failed on reading that image I put there.");
+			ex.printStackTrace(System.err);
+		}
 	}
 	
 	@Override
-	public void onMouseDragged(MapMouseEvent ev) {
+	public void onMouseReleased(MapMouseEvent ev) {
 		if(draggingFeature ==  null)
 			return;
 		Coordinate dropped = getCoordFromScreen(ev);
