@@ -205,10 +205,11 @@ public class FaceTableModel extends AbstractTableModel {
     	load = new TableWorker(faces);
     	load.run();
     	
+    	this.fireTableDataChanged();
+    	
     	map.setFaces(faces);
     	List<FaceImpl> newSelected = faces.subList(row,row + 1);
-    	map.setSelection(newSelected);
-    	this.fireTableDataChanged();
+    	map.setSelection(newSelected);    	
     }
 
     /**
