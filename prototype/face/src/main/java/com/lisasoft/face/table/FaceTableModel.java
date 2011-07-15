@@ -204,9 +204,9 @@ public class FaceTableModel extends AbstractTableModel {
     		editface.setSuedNordKoordinate(new BigDecimal(String.valueOf(value)));
     	}
     	
-    	cache.clear();
-    	load = new TableWorker(faces);
-    	load.run();
+//    	cache.clear();
+//    	load = new TableWorker(faces);
+//    	load.run();
     	
     	this.fireTableDataChanged();
     	
