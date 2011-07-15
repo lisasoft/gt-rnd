@@ -10,6 +10,7 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,12 +24,10 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import com.lisasoft.face.data.FaceDAO;
-import com.lisasoft.face.data.FaceFeatureSource;
 import com.lisasoft.face.data.FaceImpl;
 import com.lisasoft.face.map.MapComponentImpl;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
 
 public class PointDragTool extends AbstractFaceTool implements ActionListener {
 	
@@ -89,14 +88,20 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 		newFace.setWestOstKoordinate(new BigDecimal(dropped.x));
 		newFace.setSuedNordKoordinate(new BigDecimal(dropped.y));
 		List<FaceImpl> facesss = mapPane.getFaces();
+		
+		List<FaceImpl> list = new ArrayList<FaceImpl>();
+		
 		for(int i = 0; i < facesss.size(); i++) {
 			FaceImpl fac = facesss.get(i);
 			if(fac.getNummer().equals(oldFace.getNummer())) {
 				facesss.set(i, newFace);
+				list.add(newFace);
 				break;
 			}
 		}
+		
 		mapPane.setFaces(facesss);
+		mapPane.setSelectionWithoutHighlighting(list);
 		
 	}
 

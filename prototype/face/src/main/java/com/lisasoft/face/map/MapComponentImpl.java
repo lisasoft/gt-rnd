@@ -219,6 +219,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
             this.faces = new FaceDAO(faces);
             this.faces.addPropertyChangeListener( dataChangeListener );
             List<FaceImpl> list = Collections.emptyList();
+            
             setSelection(list);
             updateFaceLayers();
         } catch (IOException ex) {
@@ -262,6 +263,17 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     		FeatureId id = new FeatureIdImpl("Face." + face.getNummer());
     		ids.add(id);
     	}
+    	setSelection(faces, ids);
+    }
+    
+    /**
+     * behaves the same as setSelection(List<FaceImpl> faces) but the difference being
+     * it does not circle the features as highlighted, it only selects the feature
+     * in the table.
+     * @param faces 
+     */
+    public void setSelectionWithoutHighlighting(List<FaceImpl> faces) {
+    	Set<FeatureId> ids = new HashSet<FeatureId>();
     	setSelection(faces, ids);
     }
 
