@@ -68,16 +68,24 @@ public abstract class AbstractFaceTool extends CursorTool implements
 		Filter filter = SelectedStyleFactory.createBboxFilter(
 				FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR, bbox);
 		
-		if(!ev.isControlDown()){
-			ids = new HashSet<FeatureId>();
-		}
+		
 		
 		DataStore store = mapPane.getDataStore();
 		SimpleFeatureSource feats = store.getFeatureSource(store.getTypeNames()[0]);
 		FeatureIterator<SimpleFeature> it = feats.getFeatures(filter).features();
 		while(it.hasNext()) {
 			SimpleFeature feat = it.next();
-			ids.add(feat.getIdentifier());
+			if(!ev.isControlDown()){
+				//using is not holding control, only add the one feature
+				ids = new HashSet<FeatureId>();
+				ids.add(feat.getIdentifier());
+			} else if(ids.contains(feat.getIdentifier())){
+				//user is holding control and feature is already selected, deselect
+				ids.remove(feat.getIdentifier());
+			} else {
+				//user is holding control and feature is not already selected
+				ids.add(feat.getIdentifier());
+			}
 		}
 		System.out.println("Selected " + ids.size() + " features.");
 		return ids;
