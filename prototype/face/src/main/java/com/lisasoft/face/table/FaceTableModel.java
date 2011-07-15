@@ -152,8 +152,8 @@ public class FaceTableModel extends AbstractTableModel {
     	this.map = map;
 		this.faces = map.getFaces();
 		map.addPropertyChangeListener(dataChangeListener);
-    	this.load = new TableWorker(faces);
-        load.execute();
+//    	this.load = new TableWorker(faces);
+//        load.execute();
     }
 
     /**
