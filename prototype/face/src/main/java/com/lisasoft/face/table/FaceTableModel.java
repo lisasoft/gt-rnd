@@ -13,6 +13,8 @@
  */
 package com.lisasoft.face.table;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -149,6 +151,7 @@ public class FaceTableModel extends AbstractTableModel {
     public FaceTableModel(MapComponentImpl map){
     	this.map = map;
 		this.faces = map.getFaces();
+		map.addPropertyChangeListener(dataChangeListener);
     	this.load = new TableWorker(faces);
         load.execute();
     }
@@ -208,9 +211,21 @@ public class FaceTableModel extends AbstractTableModel {
     	this.fireTableDataChanged();
     	
     	map.setFaces(faces);
+    	map.addPropertyChangeListener(dataChangeListener);
     	List<FaceImpl> newSelected = faces.subList(row,row + 1);
     	map.setSelection(newSelected);    	
     }
+    
+    PropertyChangeListener dataChangeListener = new PropertyChangeListener() {
+    	public void propertyChange(PropertyChangeEvent ev) {
+    		// refresh the cache
+    		faces = map.getFaces();
+    		cache.clear();
+    		load = new TableWorker(faces);
+    		load.run();
+    		
+    	}
+    };
 
     /**
      * Get the value of a specified table entry

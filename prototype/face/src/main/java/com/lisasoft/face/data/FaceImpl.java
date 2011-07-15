@@ -177,7 +177,7 @@ public class FaceImpl implements Face {
     public void setCategory(String category) {
         String old = this.category;
         this.category = category;
-        pcs.firePropertyChange(CATEGORY, old, angle );
+        pcs.firePropertyChange(CATEGORY, old, category);
     }
 
     public Long getNummer() {
@@ -191,7 +191,19 @@ public class FaceImpl implements Face {
     public void setWestOstKoordinate(BigDecimal westOstKoordinate) {
         BigDecimal old = this.x;
         x = westOstKoordinate;
-        pcs.firePropertyChange(WEST_OST_KOORDINATE, old, angle );
+        pcs.firePropertyChange(WEST_OST_KOORDINATE, old, x);
+    }
+    
+    public void setCoords(BigDecimal westOstKoordinate, BigDecimal suedNordKoordinate) {
+    	BigDecimal[] oldCoord = new BigDecimal[2];
+    	BigDecimal[] newCoord = new BigDecimal[2];
+    	oldCoord[0] = this.x;
+    	oldCoord[1] = this.y;
+    	newCoord[0] = westOstKoordinate;
+    	newCoord[1] = suedNordKoordinate;
+    	this.x = westOstKoordinate;
+    	this.y = suedNordKoordinate;
+    	pcs.firePropertyChange(WEST_OST_KOORDINATE + " " + SUED_NORD_KOORDINATE, oldCoord, newCoord);
     }
 
     public BigDecimal getSuedNordKoordinate() {
@@ -201,7 +213,7 @@ public class FaceImpl implements Face {
     public void setSuedNordKoordinate(BigDecimal suedNordKoordinate) {
         BigDecimal old = y;
         y = suedNordKoordinate;
-        pcs.firePropertyChange(SUED_NORD_KOORDINATE, old, angle );
+        pcs.firePropertyChange(SUED_NORD_KOORDINATE, old, y);
     }
 
     
