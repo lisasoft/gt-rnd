@@ -1,3 +1,16 @@
+/**
+ * GeoTools Example
+ * 
+ *  (C) 2011 LISAsoft
+ *  
+ *  This library is free software; you can redistribute it and/or modify it under
+ *  the terms of the GNU Lesser General Public License as published by the Free
+ *  Software Foundation; version 2.1 of the License.
+ *  
+ *  This library is distributed in the hope that it will be useful, but WITHOUT
+ *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ *  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ */
 package com.lisasoft.face.tool;
 
 import java.awt.Point;
@@ -31,6 +44,7 @@ public abstract class AbstractFaceTool extends CursorTool implements
 
 	protected static int SELECTION_BUFFER_RADIUS = 5;
 	protected MapComponentImpl mapPane;
+	Set<FeatureId> ids = new HashSet<FeatureId>();
 	
 	public AbstractFaceTool(MapComponentImpl component) {
 		mapPane = component;
@@ -53,7 +67,11 @@ public abstract class AbstractFaceTool extends CursorTool implements
 			return null;
 		Filter filter = SelectedStyleFactory.createBboxFilter(
 				FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR, bbox);
-		Set<FeatureId> ids = new HashSet<FeatureId>();
+		
+		if(!ev.isControlDown()){
+			ids = new HashSet<FeatureId>();
+		}
+		
 		DataStore store = mapPane.getDataStore();
 		SimpleFeatureSource feats = store.getFeatureSource(store.getTypeNames()[0]);
 		FeatureIterator<SimpleFeature> it = feats.getFeatures(filter).features();
