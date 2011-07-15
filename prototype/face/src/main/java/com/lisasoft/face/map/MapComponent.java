@@ -13,6 +13,7 @@
  */
 package com.lisasoft.face.map;
 
+import java.beans.PropertyChangeListener;
 import java.util.EventListener;
 import java.util.List;
 
@@ -74,5 +75,4 @@ public interface MapComponent {
     * @param listener the listener to be deregistered.
     */
     public void removeMapSelectionListener(MapComponent.SelectionListener listener);
-
 }

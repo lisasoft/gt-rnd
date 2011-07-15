@@ -85,19 +85,7 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 			return;
 		Coordinate dropped = getCoordFromScreen(ev);
 		FaceImpl oldFace = findFace(draggingFeature);
-		FaceImpl newFace = cloneFace(oldFace);
-		newFace.setWestOstKoordinate(new BigDecimal(dropped.x));
-		newFace.setSuedNordKoordinate(new BigDecimal(dropped.y));
-		List<FaceImpl> facesss = mapPane.getFaces();
-		for(int i = 0; i < facesss.size(); i++) {
-			FaceImpl fac = facesss.get(i);
-			if(fac.getNummer().equals(oldFace.getNummer())) {
-				facesss.set(i, newFace);
-				break;
-			}
-		}
-		mapPane.setFaces(facesss);
-		
+		oldFace.setCoords(new BigDecimal(dropped.x), new BigDecimal(dropped.y));
 	}
 
 	private Coordinate getCoordFromScreen(MapMouseEvent ev) {

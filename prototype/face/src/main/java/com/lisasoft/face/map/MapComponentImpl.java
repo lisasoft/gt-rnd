@@ -16,6 +16,7 @@ package com.lisasoft.face.map;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -226,6 +227,16 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
             ex.printStackTrace(System.err);
             this.faces = null;
         }
+    }
+    
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    	if(this.faces != null)
+    		faces.addPropertyChangeListener(listener);
+    }
+    
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    	if(this.faces != null)
+    		faces.removePropertyChangeListener(listener);
     }
 
     public List<FaceImpl> getSelection() {
