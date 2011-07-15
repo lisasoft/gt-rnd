@@ -124,6 +124,7 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
                 // if we had seperate layers we could check if face was in the selected
                 // set and just redraw what was needed.
                 MapComponentImpl.this.repaintMap( faceLayer );
+                MapComponentImpl.this.repaintMap( selectedLayer );
             }
         }
     };
