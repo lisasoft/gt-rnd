@@ -39,12 +39,14 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 		mapPane.setCursorTool(this);
 	}
 	
+	/**
+	 * Used to track which feature is being dragged.  Must be null whenever a single feature
+	 * has not been grabbed.
+	 */
 	private FeatureId draggingFeature;
-	private Point lastPoint;
 	
 	@Override
 	public void onMousePressed(MapMouseEvent ev) {
-		lastPoint = ev.getPoint();
 		try {
 			Set<FeatureId> ids = getSelectedIds(ev);
 			if(ids.size() != 1) {
@@ -108,6 +110,13 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 
 	}
 
+	/**
+	 * Takes the mouse event and converts it's screen location into a coordinate in the same
+	 * CRS as the Face dataset.
+	 * 
+	 * @param ev
+	 * @return
+	 */
 	private Coordinate getCoordFromScreen(MapMouseEvent ev) {
 		try {
 			Point pnt = ev.getPoint();
@@ -134,6 +143,11 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 		return null;
 	}
 	
+	/**
+	 * Performs a shallow-clone of a FaceImpl object.
+	 * @param faceIn
+	 * @return
+	 */
 	private FaceImpl cloneFace(FaceImpl faceIn) {
 	    	FaceImpl clone = new FaceImpl(faceIn.getNummer());
 	    	clone.setType(faceIn.getType());
