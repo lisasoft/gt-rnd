@@ -13,18 +13,11 @@
  */
 package com.lisasoft.face.table;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-
-import org.geotools.swing.table.FeatureCollectionTableModel;
 
 import com.lisasoft.face.Listeners.SelectionListener;
-import com.lisasoft.face.data.Face;
 import com.lisasoft.face.map.MapComponentImpl;
 
 /**
@@ -54,7 +47,6 @@ public class FaceTable extends JTable {
      * to work with MapComponentImpl.
      */
     private void initi() {
-        // SH: Please configure table here; you can inner classed or break out seperate classes
     	
     	if (map.getFaces() != null) {
             FaceTableModel model = new FaceTableModel(map);
@@ -65,8 +57,6 @@ public class FaceTable extends JTable {
             
             SelectionListener listener = new SelectionListener(this, map);
             this.getSelectionModel().addListSelectionListener(listener);
-//            this.getColumnModel().getSelectionModel()
-//                .addListSelectionListener(listener);
             this.map.addMapSelectionListener(listener);
             
         }

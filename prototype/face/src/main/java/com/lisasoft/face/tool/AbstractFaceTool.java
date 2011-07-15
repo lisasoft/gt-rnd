@@ -68,8 +68,6 @@ public abstract class AbstractFaceTool extends CursorTool implements
 		Filter filter = SelectedStyleFactory.createBboxFilter(
 				FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR, bbox);
 		
-		
-		
 		DataStore store = mapPane.getDataStore();
 		SimpleFeatureSource feats = store.getFeatureSource(store.getTypeNames()[0]);
 		FeatureIterator<SimpleFeature> it = feats.getFeatures(filter).features();
