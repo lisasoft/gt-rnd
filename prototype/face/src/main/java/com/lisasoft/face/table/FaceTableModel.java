@@ -191,33 +191,19 @@ public class FaceTableModel extends AbstractTableModel {
     }
     
     public void setValueAt(Object value, int row, int col) {
-        System.out.println("+++++++++++++setValueAt+++++++++++++++");
-    	System.out.println("value: " + value + " row: " + row + " col " + col);
+    	System.out.println("New face value: " + value + " row: " + row + " col " + col);
     	
     	FaceImpl editface = faces.get(row);
-    	System.out.println("Numberf1: " + editface.getNummer() + " Sued: " + editface.getSuedNordKoordinate());
-    	
-    	String s = String.valueOf(value);
     	
     	if(col == 10){
-    		editface.setWestOstKoordinate(new BigDecimal(s));
+    		editface.setWestOstKoordinate(new BigDecimal(String.valueOf(value)));
     	} else if(col == 11){
-    		editface.setSuedNordKoordinate(new BigDecimal(s));
+    		editface.setSuedNordKoordinate(new BigDecimal(String.valueOf(value)));
     	}
-        
-        faces.remove(row);
-        faces.add(row, editface);
-        
-        FaceImpl newFace = faces.get(row);
-    	System.out.println("New Face nummer: " + newFace.getNummer() + " West: " + newFace.getWestOstKoordinate() + " Sued: " + newFace.getSuedNordKoordinate());
     	
     	cache.clear();
     	load = new TableWorker(faces);
     	load.run();
-    	
-    	for(FaceImpl f : faces){
-    		System.out.println("face: " + f.getNummer() + " West: " + f.getWestOstKoordinate() + " Sued: " + f.getSuedNordKoordinate());
-    	}
     	
     	map.setFaces(faces);
     	List<FaceImpl> newSelected = faces.subList(row,row + 1);
