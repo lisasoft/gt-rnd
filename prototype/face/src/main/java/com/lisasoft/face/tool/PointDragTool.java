@@ -93,7 +93,6 @@ public class PointDragTool extends AbstractFaceTool implements ActionListener {
 		mapPane.setSelectionWithoutHighlighting(list);
 
 		oldFace.setCoords(new BigDecimal(dropped.x), new BigDecimal(dropped.y));
-
 	}
 
 	/**
