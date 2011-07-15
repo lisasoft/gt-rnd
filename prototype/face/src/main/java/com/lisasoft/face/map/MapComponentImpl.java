@@ -209,9 +209,10 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     	return fids;
    }
 
-    // MAP COMPONENT INTERFACE
+    /**
+     * Retrieves a list of all face of all Faces.
+     */
     public List<FaceImpl> getFaces() {
-
         return (List<FaceImpl>) (faces != null ? faces.contents() : Collections.emptyList());
     }
 
