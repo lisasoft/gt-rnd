@@ -73,6 +73,12 @@ public abstract class AbstractFaceTool extends CursorTool implements
 		DataStore store = mapPane.getDataStore();
 		SimpleFeatureSource feats = store.getFeatureSource(store.getTypeNames()[0]);
 		FeatureIterator<SimpleFeature> it = feats.getFeatures(filter).features();
+		
+		//deselect features if user clicks empty space but only if control is not being held down
+		if(!it.hasNext() && !ev.isControlDown()){
+			ids = new HashSet<FeatureId>();
+		}
+		
 		while(it.hasNext()) {
 			SimpleFeature feat = it.next();
 			if(!ev.isControlDown()){
