@@ -16,7 +16,6 @@ package com.lisasoft.face.map;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,7 +28,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultRepository;
-import org.geotools.data.FeatureSource;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
@@ -311,8 +309,9 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
 		this.selectedFaces = faces;
 		this.selectedLayer.setStyle(SelectedStyleFactory.createSelectedStyle(
 				ids, FaceFeatureSource.FACE_FEATURE_GEOMETRY_DESCRIPTOR));
+		
 		repaint();
-		fireMapSelection();
+		fireMapSelection();		
 	}
 
 	/**

@@ -24,12 +24,10 @@ import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.Symbolizer;
-import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.style.ContrastMethod;
-import org.opengis.style.PointSymbolizer;
 import org.opengis.style.Stroke;
 
 /**
