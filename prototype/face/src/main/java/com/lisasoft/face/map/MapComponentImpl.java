@@ -153,6 +153,10 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
       MapComponentImpl.this.layerMoved( event2 );
     }
     
+    /**
+     * This method should be called whenever the faces object is replaced.  Otherwise the 
+     * layers rendered will not reflect the correct dataset.
+     */
     private void updateFaceLayers() {
     	if(this.faceLayer != null) {
     		this.getMapContext().removeLayer(faceLayer);
@@ -212,8 +216,10 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     }
 
     /**
-     * This method updates the contents of our FaceDAO. It will also trigger a map refresh so the
-     * screen is redrawn.
+     * This method updates the contents of our FaceDAO. 
+     * It does so by creating a new FaceDAO object.  This means that listeners to the old
+     * object will be lost (with the exception of this object which re-registers itself).
+     * It also replaces the map layers and feature stores to use the new dataset.
      */
     public void setFaces(List<FaceImpl> faces) {
         try {
@@ -232,15 +238,20 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
     }
     
     public void addPropertyChangeListener(PropertyChangeListener listener) {
+    	super.addPropertyChangeListener(listener);
     	if(this.faces != null)
     		faces.addPropertyChangeListener(listener);
     }
     
     public void removePropertyChangeListener(PropertyChangeListener listener) {
+    	super.removePropertyChangeListener(listener);
     	if(this.faces != null)
     		faces.removePropertyChangeListener(listener);
     }
 
+    /**
+     * Returns a thread-safe list of all selected Face objects, or an empty list.
+     */
     public List<FaceImpl> getSelection() {
         return (List<FaceImpl>) (selectedFaces != null ? 
         			new CopyOnWriteArrayList<FaceImpl>(selectedFaces) : 
@@ -303,12 +314,6 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
             fireMapSelection();
     }
     
-    @Override
-    public void repaint() {
-    	System.out.println("Repainting map component.");
-    	super.repaint();
-    }
-    
     /**
      * This is a really simple event notification.
      */
@@ -324,10 +329,16 @@ public class MapComponentImpl extends JMapPane implements MapComponent {
         }
     }
 
+    /**
+     * Register interest in knowing when something has been selected on the map.
+     */
     public void addMapSelectionListener(SelectionListener listener) {
         listenerList.add(SelectionListener.class, listener);
     }
 
+    /**
+     * Register disinterest in knowing when something has been selected on the map.
+     */
     public void removeMapSelectionListener(SelectionListener listener) {
         listenerList.remove(SelectionListener.class, listener);
     }
